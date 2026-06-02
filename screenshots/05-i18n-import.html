@@ -1,0 +1,135 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>InstaType — i18n &amp; portability</title>
+<link rel="stylesheet" href="../_shared.css">
+<style>
+  html, body { width: 1280px; height: 800px; overflow: hidden; }
+  body {
+    background:
+      radial-gradient(ellipse 60% 60% at 50% 100%, rgba(255,91,46,0.15), transparent 55%),
+      var(--bg);
+    padding: 60px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 80px;
+    position: relative;
+  }
+  body::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(28,26,23,0.04) 1.5px, transparent 1.5px);
+    background-size: 6px 6px;
+    pointer-events: none;
+  }
+  .left { position: relative; z-index: 2; }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--accent-deep); font-weight: 700; margin-bottom: 22px;
+  }
+  h1 {
+    font-family: var(--font-serif); font-style: italic;
+    font-size: 80px; line-height: 0.97; letter-spacing: -0.025em;
+    color: var(--ink); margin-bottom: 24px;
+    font-weight: 400;
+  }
+  h1 b {
+    font-style: normal; font-weight: 700;
+    font-family: var(--font-sans); letter-spacing: -0.03em;
+  }
+  .accent { color: var(--accent-deep); }
+  .tagline { font-size: 22px; color: var(--ink-2); line-height: 1.45; max-width: 540px; margin-bottom: 30px; }
+  .langs {
+    display: flex; flex-wrap: wrap; gap: 10px;
+    font-family: var(--font-mono); font-size: 13px; font-weight: 600;
+  }
+  .lang-chip {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: white; border: 1px solid var(--line);
+    border-radius: 999px; padding: 7px 13px 7px 11px;
+    color: var(--ink);
+  }
+  .lang-chip .flag { font-size: 18px; }
+
+  .right { position: relative; z-index: 2; display: grid; place-items: center; }
+  .menu-pop {
+    width: 280px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    box-shadow: 0 30px 60px rgba(28,26,23,0.22);
+    padding: 6px;
+    font-size: 13px;
+  }
+  .menu-pop > div {
+    padding: 9px 11px; border-radius: 8px;
+    color: var(--ink); display: flex; align-items: center;
+    justify-content: space-between; gap: 8px; font-weight: 500;
+  }
+  .menu-pop > div.hover { background: var(--surface-2); }
+  .menu-pop .arrow { color: var(--muted); font-size: 11px; }
+  .menu-sep { height: 1px; background: var(--line); margin: 4px 4px; }
+  .lang-current {
+    font-size: 11.5px; color: var(--muted);
+    display: inline-flex; align-items: center; gap: 4px;
+  }
+  .stack {
+    display: flex; flex-direction: column; gap: 14px;
+    align-items: stretch; width: 320px;
+  }
+  .file-card {
+    background: white; border: 1px solid var(--line);
+    border-radius: 14px; padding: 14px 16px;
+    display: flex; align-items: center; gap: 14px;
+    box-shadow: 0 12px 28px rgba(28,26,23,0.10);
+  }
+  .file-icon {
+    width: 44px; height: 50px;
+    background: var(--accent-soft);
+    border-radius: 8px;
+    display: grid; place-items: center;
+    font-family: var(--font-mono); font-weight: 700;
+    color: var(--accent-deep); font-size: 11px;
+    border: 1px solid #ffd6c5;
+    flex-shrink: 0;
+  }
+  .file-meta .name { font-weight: 600; font-size: 13px; margin-bottom: 2px; }
+  .file-meta .meta {
+    font-family: var(--font-mono); font-size: 11px; color: var(--muted);
+  }
+</style>
+</head>
+<body>
+  <div class="left">
+    <div class="eyebrow">Yours, portable</div>
+    <h1>Multi-language.<br><span class="accent">Multi-device.</span></h1>
+    <p class="tagline">UI in English, Portuguese and Spanish — follows your system by default. Export your library, restore on any device.</p>
+    <div class="langs">
+      <span class="lang-chip"><span class="flag">🇺🇸</span> English</span>
+      <span class="lang-chip"><span class="flag">🇧🇷</span> Português</span>
+      <span class="lang-chip"><span class="flag">🇪🇸</span> Español</span>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="stack">
+      <div class="menu-pop">
+        <div><span>Export templates</span><span class="arrow">▶</span></div>
+        <div class="hover"><span>Import templates…</span></div>
+        <div class="menu-sep"></div>
+        <div><span>Language</span><span class="lang-current">System · English ▶</span></div>
+      </div>
+      <div class="file-card">
+        <div class="file-icon">JSON</div>
+        <div class="file-meta">
+          <div class="name">instatype-all-2026-06-02.json</div>
+          <div class="meta">7 templates · 4.1 KB</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

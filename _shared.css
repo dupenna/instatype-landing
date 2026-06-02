@@ -1,0 +1,169 @@
+@import url('https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap');
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:          #faf7f2;
+  --surface:     #ffffff;
+  --surface-2:   #f3efe7;
+  --surface-3:   #ebe6da;
+  --ink:         #1c1a17;
+  --ink-2:       #5b5751;
+  --muted:       #98938a;
+  --line:        #e8e2d6;
+  --line-2:      #d5cdbb;
+  --accent:      #ff5b2e;
+  --accent-2:    #ff7e4d;
+  --accent-soft: #ffe8df;
+  --accent-deep: #b53b16;
+  --green:       #4a8a5c;
+  --green-soft:  #e3efd9;
+
+  --font-sans:  'Geist', system-ui, sans-serif;
+  --font-serif: 'Instrument Serif', Georgia, serif;
+  --font-mono:  'Geist Mono', ui-monospace, monospace;
+}
+
+html, body { font-family: var(--font-sans); color: var(--ink); }
+
+/* Reusable side-panel preview that mirrors the real product */
+.panel-frame {
+  background: var(--bg);
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 30px 80px rgba(28,26,23,0.22), 0 8px 20px rgba(28,26,23,0.08);
+  display: flex; flex-direction: column;
+  border: 1px solid rgba(28,26,23,0.06);
+}
+.panel-frame .header {
+  padding: 18px 18px 14px;
+}
+.panel-frame .brand-row {
+  display: flex; align-items: center; justify-content: space-between;
+}
+.panel-frame .brand {
+  display: flex; align-items: center; gap: 10px;
+}
+.panel-frame .logo {
+  width: 32px; height: 32px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  display: grid; place-items: center;
+  color: white;
+  font-family: var(--font-serif); font-style: italic; font-size: 20px;
+  letter-spacing: -0.02em;
+  box-shadow: 0 4px 14px rgba(255, 91, 46, 0.32);
+}
+.panel-frame .brand-name {
+  font-family: var(--font-serif); font-size: 27px; font-style: italic;
+  letter-spacing: -0.02em; line-height: 1;
+  display: inline-flex; align-items: baseline;
+}
+.panel-frame .brand-name b {
+  font-style: normal; font-family: var(--font-sans);
+  font-weight: 700; font-size: 23px; margin-left: -2px;
+  letter-spacing: -0.025em;
+}
+.panel-frame .kebab {
+  width: 32px; height: 32px;
+  display: grid; place-items: center;
+  border-radius: 8px;
+  color: var(--ink-2);
+  background: none; border: none;
+}
+.panel-frame .kebab svg { width: 16px; height: 16px; }
+
+.panel-frame .new-row { padding: 0 18px 12px; }
+.panel-frame .btn-new {
+  width: 100%; background: var(--ink); color: var(--bg);
+  border: none; border-radius: 12px; padding: 11px 14px;
+  font-weight: 600; font-size: 13.5px;
+  display: flex; align-items: center; justify-content: center; gap: 9px;
+}
+.panel-frame .btn-new .plus {
+  width: 18px; height: 18px;
+  background: var(--accent); border-radius: 6px;
+  display: grid; place-items: center;
+  color: white; font-weight: 700; font-size: 14px; line-height: 1;
+}
+
+.panel-frame .toolbar { padding: 0 18px 14px; }
+.panel-frame .search {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 10px; padding: 9px 12px;
+  display: flex; align-items: center; gap: 9px;
+}
+.panel-frame .search svg { width: 14px; height: 14px; color: var(--muted); }
+.panel-frame .search span.q { color: var(--ink); font-size: 13px; }
+.panel-frame .search span.q.empty { color: var(--muted); }
+.panel-frame .filters { display: flex; gap: 4px; margin-top: 10px; font-size: 12px; }
+.panel-frame .filter {
+  padding: 6px 10px; border-radius: 8px;
+  color: var(--ink-2); border: 1px solid transparent;
+  font-weight: 500;
+  display: inline-flex; align-items: center; gap: 7px;
+  background: none;
+}
+.panel-frame .filter.active { background: var(--ink); color: var(--bg); }
+.panel-frame .filter-label { display: inline-flex; flex-direction: column; line-height: 1.1; align-items: flex-start; }
+.panel-frame .filter-sub {
+  font-family: var(--font-mono); font-style: normal;
+  font-size: 9.5px; margin-top: 1px; opacity: 0.55;
+}
+.panel-frame .filter.active .filter-sub { opacity: 0.7; }
+.panel-frame .count {
+  font-family: var(--font-mono); font-size: 10.5px; opacity: 0.55;
+}
+.panel-frame .filter.active .count { opacity: 0.7; }
+
+.panel-frame .list { padding: 0 14px 14px; flex: 1; }
+.panel-frame .card {
+  background: var(--surface); border: 1px solid var(--line);
+  border-radius: 14px; padding: 14px; margin-bottom: 10px;
+}
+.panel-frame .card-head {
+  display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; margin-bottom: 8px;
+}
+.panel-frame .card-title {
+  font-weight: 600; font-size: 14px; line-height: 1.25; letter-spacing: -0.005em;
+}
+.panel-frame .scope {
+  flex-shrink: 0; font-size: 10.5px; font-weight: 500;
+  padding: 3px 9px; border-radius: 6px;
+  color: var(--ink-2); background: var(--surface-2);
+}
+.panel-frame .scope.global {
+  background: var(--accent-soft); color: var(--accent-deep); font-weight: 600;
+}
+.panel-frame .card-content {
+  font-family: var(--font-mono); font-size: 11.5px;
+  color: var(--ink-2); line-height: 1.55;
+  background: var(--surface-2); border-radius: 8px;
+  padding: 9px 11px; margin-bottom: 10px;
+  white-space: pre-wrap;
+  display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+}
+.panel-frame .card-foot {
+  display: flex; align-items: center; justify-content: space-between;
+  font-size: 11px; color: var(--muted);
+}
+.panel-frame .card-actions { display: flex; gap: 2px; }
+.panel-frame .card-actions span {
+  padding: 4px 9px; font-size: 11.5px; font-weight: 500;
+  color: var(--ink-2); border-radius: 6px;
+}
+
+.panel-frame .shortcut-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 9px 18px; border-top: 1px solid var(--line); background: var(--bg);
+  font-size: 11px; color: var(--ink-2);
+}
+.panel-frame .shortcut-bar kbd {
+  font-family: var(--font-mono);
+  background: var(--surface); border: 1px solid var(--line);
+  border-bottom-width: 2px; border-radius: 5px;
+  padding: 1px 6px; font-size: 10.5px; font-weight: 600;
+  color: var(--ink); min-width: 18px; text-align: center;
+  display: inline-block; line-height: 1.3;
+}
+.panel-frame .shortcut-bar .kbd-row { display: inline-flex; gap: 3px; }

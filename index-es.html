@@ -1,0 +1,851 @@
+<!doctype html>
+<html lang="es-ES">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>InstaType — Plantillas de texto para Chrome</title>
+  <meta name="description" content="Guarda fragmentos de texto y pégalos en cualquier campo web con clic derecho, panel lateral o un atajo de teclado. Privado, offline, gratis.">
+  <meta property="og:title" content="InstaType — Plantillas de texto para Chrome">
+  <meta property="og:description" content="Guarda fragmentos de texto y pégalos en cualquier campo web. Privado, offline, gratis.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://instatype.s3web.com.br/">
+  <link rel="icon" type="image/png" sizes="48x48" href="icon48.png">
+  <link rel="apple-touch-icon" sizes="128x128" href="icon128.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #faf7f2;
+      --surface: #ffffff;
+      --surface-2: #f3efe7;
+      --ink: #1c1a17;
+      --ink-2: #5b5751;
+      --muted: #98938a;
+      --line: #e8e2d6;
+      --line-2: #d5cdbb;
+      --accent: #ff5b2e;
+      --accent-2: #ff7e4d;
+      --accent-soft: #ffe8df;
+      --accent-deep: #b53b16;
+      --green: #4a8a5c;
+      --font-sans: 'Geist', system-ui, sans-serif;
+      --font-serif: 'Instrument Serif', Georgia, serif;
+      --font-mono: 'Geist Mono', ui-monospace, monospace;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body {
+      background: var(--bg);
+      color: var(--ink);
+      font-family: var(--font-sans);
+      font-size: 16px;
+      line-height: 1.55;
+      -webkit-font-smoothing: antialiased;
+      scroll-behavior: smooth;
+    }
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: radial-gradient(rgba(28,26,23,0.04) 1.2px, transparent 1.2px);
+      background-size: 6px 6px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* ============ NAV ============ */
+    .nav {
+      position: sticky; top: 0; z-index: 50;
+      background: rgba(250, 247, 242, 0.85);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border-bottom: 1px solid var(--line);
+    }
+    .nav-inner {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 14px 28px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .brand {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none; color: inherit;
+    }
+    .brand .logo {
+      width: 32px; height: 32px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      display: grid; place-items: center;
+      color: white;
+      font-family: var(--font-serif); font-style: italic; font-size: 20px;
+      letter-spacing: -0.02em;
+      box-shadow: 0 4px 14px rgba(255, 91, 46, 0.32);
+    }
+    .brand .wm {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: 22px; letter-spacing: -0.02em; line-height: 1;
+      display: inline-flex; align-items: baseline;
+    }
+    .brand .wm b {
+      font-style: normal; font-family: var(--font-sans);
+      font-weight: 700; font-size: 19px; margin-left: -1px;
+      letter-spacing: -0.025em;
+    }
+    .nav-links {
+      display: flex; align-items: center; gap: 28px;
+      font-size: 14px; font-weight: 500;
+    }
+    .nav-links a {
+      color: var(--ink-2); text-decoration: none;
+      transition: color 120ms ease;
+    }
+    .nav-links a:hover { color: var(--ink); }
+    .lang-switch {
+      display: inline-flex; align-items: center; gap: 2px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 3px;
+      font-family: var(--font-mono);
+      font-size: 11px; font-weight: 600;
+    }
+    .lang-switch a {
+      padding: 4px 9px;
+      border-radius: 999px;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      transition: all 120ms ease;
+    }
+    .lang-switch a:hover { color: var(--ink); }
+    .lang-switch a.current {
+      background: var(--ink);
+      color: var(--bg);
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 9px 14px;
+      background: var(--ink); color: var(--bg);
+      border-radius: 10px;
+      font-size: 14px; font-weight: 600;
+      text-decoration: none;
+      transition: all 140ms ease;
+      border: 1px solid var(--ink);
+    }
+    .btn:hover {
+      background: var(--accent); border-color: var(--accent);
+      box-shadow: 0 8px 22px rgba(255,91,46,0.35);
+    }
+    .btn .badge {
+      background: var(--accent); color: white;
+      padding: 2px 6px; border-radius: 4px;
+      font-family: var(--font-mono);
+      font-size: 10px; font-weight: 700;
+    }
+    .btn:hover .badge { background: white; color: var(--accent-deep); }
+
+    /* ============ HERO ============ */
+    .hero {
+      position: relative; z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 90px 28px 60px;
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 60px;
+      align-items: center;
+    }
+    .hero-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px; text-transform: uppercase; letter-spacing: 0.18em;
+      color: var(--accent-deep); font-weight: 700;
+      margin-bottom: 24px;
+      display: inline-flex; align-items: center; gap: 10px;
+    }
+    .hero-eyebrow .dot {
+      width: 8px; height: 8px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 4px rgba(255,91,46,0.18);
+    }
+    h1 {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: 80px; line-height: 0.96; letter-spacing: -0.028em;
+      color: var(--ink); font-weight: 400;
+      margin-bottom: 24px;
+    }
+    h1 b {
+      font-style: normal; font-weight: 700;
+      font-family: var(--font-sans); letter-spacing: -0.035em;
+    }
+    h1 .accent { color: var(--accent-deep); }
+    .hero-lead {
+      font-size: 19px; color: var(--ink-2);
+      max-width: 520px; line-height: 1.5;
+      margin-bottom: 36px;
+    }
+    .hero-cta {
+      display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .btn-large {
+      padding: 14px 22px;
+      font-size: 16px;
+      border-radius: 12px;
+    }
+    .hero-trust {
+      display: flex; gap: 16px;
+      font-size: 13px; color: var(--muted);
+      margin-top: 24px; flex-wrap: wrap;
+    }
+    .hero-trust span { display: inline-flex; align-items: center; gap: 6px; }
+    .hero-trust svg { width: 14px; height: 14px; color: var(--green); }
+
+    /* hero visual */
+    .hero-visual {
+      position: relative; height: 540px;
+    }
+    .hero-panel {
+      width: 320px; height: 480px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: 0 30px 70px rgba(28,26,23,0.18);
+      transform: rotate(-3deg);
+      overflow: hidden;
+      position: absolute; left: 0; top: 30px;
+    }
+    .hero-panel .hp-head {
+      padding: 18px 18px 14px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .hero-panel .hp-brand { display: flex; align-items: center; gap: 9px; }
+    .hero-panel .hp-logo {
+      width: 28px; height: 28px;
+      border-radius: 8px;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      display: grid; place-items: center; color: white;
+      font-family: var(--font-serif); font-style: italic; font-size: 17px;
+    }
+    .hero-panel .hp-wm {
+      font-family: var(--font-serif); font-style: italic; font-size: 21px;
+      display: inline-flex; align-items: baseline; line-height: 1;
+    }
+    .hero-panel .hp-wm b {
+      font-style: normal; font-family: var(--font-sans);
+      font-weight: 700; font-size: 18px; margin-left: -1px;
+    }
+    .hero-panel .hp-newbtn {
+      margin: 0 18px 14px;
+      background: var(--ink); color: white;
+      padding: 11px; text-align: center;
+      border-radius: 10px;
+      font-size: 13px; font-weight: 600;
+    }
+    .hero-panel .hp-card {
+      margin: 10px 14px;
+      background: white; border: 1px solid var(--line);
+      border-radius: 12px; padding: 12px;
+      font-size: 12px;
+    }
+    .hero-panel .hp-card .hp-t {
+      display: flex; justify-content: space-between; align-items: center;
+      font-weight: 600; margin-bottom: 6px;
+    }
+    .hero-panel .hp-card .hp-s {
+      font-size: 9.5px; padding: 2px 7px; border-radius: 5px;
+      background: var(--accent-soft); color: var(--accent-deep);
+      font-weight: 600;
+    }
+    .hero-panel .hp-card .hp-prev {
+      font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-2);
+      background: var(--surface-2); padding: 7px 9px; border-radius: 6px;
+      line-height: 1.45;
+      white-space: pre-wrap;
+      display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
+    }
+    .hero-picker {
+      position: absolute;
+      right: 0; top: 200px;
+      width: 270px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: 0 24px 56px rgba(28,26,23,0.22);
+      overflow: hidden;
+      transform: rotate(4deg);
+    }
+    .hero-picker .hk-search {
+      padding: 9px 12px; border-bottom: 1px solid var(--line);
+      font-size: 12.5px; display: flex; align-items: center; gap: 8px;
+    }
+    .hero-picker .hk-search svg { width: 13px; height: 13px; color: var(--muted); }
+    .hero-picker .hk-search .caret {
+      display: inline-block; width: 2px; height: 13px;
+      background: var(--accent); vertical-align: -2px;
+      animation: blink 1s steps(2) infinite;
+    }
+    @keyframes blink { 50% { opacity: 0; } }
+    .hero-picker .hk-item {
+      padding: 9px 12px; border-bottom: 1px solid var(--line);
+      font-size: 12px;
+    }
+    .hero-picker .hk-item.active { background: var(--surface-2); }
+    .hero-picker .hk-item .hk-tt {
+      display: flex; justify-content: space-between; align-items: center;
+      font-weight: 600; margin-bottom: 2px;
+    }
+    .hero-picker .hk-item .hk-scope {
+      font-size: 9.5px; padding: 1px 6px; border-radius: 4px;
+      background: var(--accent-soft); color: var(--accent-deep); font-weight: 600;
+    }
+    .hero-picker .hk-item .hk-prev {
+      font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-2);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .hero-kbd {
+      position: absolute; left: 60px; bottom: 0;
+      background: white; border: 1px solid var(--line-2);
+      border-radius: 12px;
+      padding: 14px 18px;
+      box-shadow: 0 12px 28px rgba(28,26,23,0.14);
+      transform: rotate(-1deg);
+      display: flex; align-items: center; gap: 12px;
+    }
+    .hero-kbd .hk-eyebrow {
+      font-family: var(--font-mono); font-size: 9.5px;
+      text-transform: uppercase; letter-spacing: 0.16em;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+    .hero-kbd .hk-keys { display: flex; gap: 4px; }
+    .hero-kbd kbd {
+      font-family: var(--font-mono); font-weight: 700;
+      background: var(--surface-2);
+      border: 1px solid var(--line-2);
+      border-bottom-width: 2px;
+      border-radius: 6px;
+      padding: 4px 9px;
+      font-size: 14px; min-width: 26px;
+      color: var(--ink); text-align: center;
+    }
+
+    /* ============ SECTIONS ============ */
+    section {
+      position: relative; z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 80px 28px;
+    }
+    .section-eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12px; text-transform: uppercase; letter-spacing: 0.18em;
+      color: var(--accent-deep); font-weight: 700;
+      margin-bottom: 18px;
+    }
+    h2 {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: 56px; line-height: 1.02; letter-spacing: -0.025em;
+      color: var(--ink); font-weight: 400;
+      margin-bottom: 20px;
+      max-width: 700px;
+    }
+    h2 b {
+      font-style: normal; font-weight: 700;
+      font-family: var(--font-sans); letter-spacing: -0.03em;
+    }
+    h2 .accent { color: var(--accent-deep); }
+    .section-lead {
+      font-size: 19px; color: var(--ink-2);
+      max-width: 640px; margin-bottom: 50px;
+    }
+
+    /* ============ FEATURES ============ */
+    .features {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .feature {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 26px 24px 24px;
+      transition: all 200ms cubic-bezier(0.2, 0.8, 0.3, 1);
+    }
+    .feature:hover {
+      border-color: var(--ink);
+      box-shadow: 0 14px 32px rgba(28,26,23,0.10);
+      transform: translateY(-3px);
+    }
+    .feature-icon {
+      width: 40px; height: 40px;
+      border-radius: 10px;
+      background: var(--accent-soft);
+      color: var(--accent-deep);
+      display: grid; place-items: center;
+      margin-bottom: 18px;
+    }
+    .feature-icon svg { width: 20px; height: 20px; }
+    .feature h3 {
+      font-family: var(--font-sans);
+      font-weight: 700; font-size: 17px; letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+    .feature p {
+      font-size: 14px; color: var(--ink-2); line-height: 1.55;
+    }
+    .feature .feat-kbd {
+      display: inline-flex; gap: 3px;
+      margin-top: 12px;
+    }
+    .feature .feat-kbd kbd {
+      font-family: var(--font-mono); font-weight: 600;
+      background: white; border: 1px solid var(--line-2);
+      border-bottom-width: 2px;
+      border-radius: 5px;
+      padding: 1px 6px; font-size: 11px;
+      color: var(--ink);
+    }
+
+    /* ============ HOW IT WORKS ============ */
+    .how {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 30px;
+      margin-top: 12px;
+    }
+    .step {
+      position: relative;
+      padding: 24px 0;
+    }
+    .step-num {
+      font-family: var(--font-serif); font-style: italic;
+      font-size: 70px; line-height: 1; color: var(--accent);
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+      opacity: 0.7;
+    }
+    .step h3 {
+      font-family: var(--font-sans);
+      font-weight: 700; font-size: 20px; letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+    .step p {
+      font-size: 15px; color: var(--ink-2); line-height: 1.55;
+    }
+    .step kbd {
+      font-family: var(--font-mono); font-weight: 600;
+      background: var(--surface); border: 1px solid var(--line);
+      border-bottom-width: 2px;
+      border-radius: 5px;
+      padding: 1px 6px; font-size: 12px;
+    }
+
+    /* ============ SCREENSHOTS ============ */
+    .screens {
+      display: flex;
+      gap: 20px;
+      overflow-x: auto;
+      padding: 4px 0 24px;
+      scroll-snap-type: x mandatory;
+      scrollbar-color: var(--line-2) transparent;
+    }
+    .screens::-webkit-scrollbar { height: 8px; }
+    .screens::-webkit-scrollbar-thumb {
+      background: var(--line-2); border-radius: 4px;
+    }
+    .screens img {
+      width: 640px;
+      max-width: 80vw;
+      height: auto;
+      border-radius: 14px;
+      border: 1px solid var(--line);
+      box-shadow: 0 18px 42px rgba(28,26,23,0.12);
+      scroll-snap-align: start;
+      flex-shrink: 0;
+    }
+
+    /* ============ PRIVACY STRIP ============ */
+    .privacy {
+      background: var(--ink);
+      color: var(--bg);
+      border-radius: 24px;
+      padding: 60px 50px;
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 50px;
+      align-items: center;
+      margin-top: 80px;
+      position: relative;
+      overflow: hidden;
+    }
+    .privacy::before {
+      content: '';
+      position: absolute; right: -100px; top: -100px;
+      width: 380px; height: 380px;
+      background: radial-gradient(circle, var(--accent) 0%, transparent 70%);
+      opacity: 0.18;
+      pointer-events: none;
+    }
+    .privacy h2 {
+      color: var(--bg);
+      font-size: 46px; max-width: 480px;
+      margin-bottom: 18px;
+    }
+    .privacy p {
+      font-size: 17px; color: rgba(250,247,242,0.75);
+      line-height: 1.55; max-width: 460px;
+    }
+    .privacy-points {
+      display: grid; gap: 12px;
+      font-size: 14px; font-weight: 500;
+      position: relative;
+    }
+    .privacy-points .p {
+      display: flex; align-items: flex-start; gap: 10px;
+      color: rgba(250,247,242,0.92);
+    }
+    .privacy-points .p::before {
+      content: '';
+      width: 8px; height: 8px;
+      background: var(--accent);
+      border-radius: 2px;
+      margin-top: 6px;
+      flex-shrink: 0;
+    }
+    .privacy-points .p b {
+      color: white; font-weight: 600;
+    }
+    .privacy-link {
+      margin-top: 24px;
+      display: inline-flex; align-items: center; gap: 6px;
+      color: var(--accent); font-weight: 600; font-size: 14px;
+      text-decoration: none; border-bottom: 1px solid var(--accent);
+      padding-bottom: 2px;
+    }
+    .privacy-link:hover { color: var(--accent-2); border-color: var(--accent-2); }
+
+    /* ============ FAQ ============ */
+    .faq {
+      display: grid; gap: 14px;
+    }
+    .faq details {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px 22px;
+    }
+    .faq details[open] { border-color: var(--ink); }
+    .faq summary {
+      cursor: pointer;
+      font-weight: 600; font-size: 16px;
+      letter-spacing: -0.01em;
+      list-style: none;
+      display: flex; align-items: center; justify-content: space-between;
+      gap: 12px;
+    }
+    .faq summary::after {
+      content: '+';
+      font-family: var(--font-mono);
+      color: var(--accent);
+      font-size: 22px; font-weight: 400;
+      transition: transform 180ms ease;
+    }
+    .faq details[open] summary::after { content: '−'; }
+    .faq p {
+      margin-top: 12px;
+      font-size: 14px; color: var(--ink-2); line-height: 1.6;
+    }
+    .faq summary::-webkit-details-marker { display: none; }
+
+    /* ============ FOOTER CTA ============ */
+    .cta-final {
+      text-align: center;
+      padding: 100px 28px 120px;
+    }
+    .cta-final h2 {
+      font-size: 64px; margin: 0 auto 20px;
+    }
+    .cta-final .section-lead {
+      margin: 0 auto 36px;
+    }
+
+    /* ============ FOOTER ============ */
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 30px 28px;
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 13px; color: var(--muted);
+      flex-wrap: wrap; gap: 12px;
+    }
+    footer a { color: var(--ink-2); text-decoration: none; }
+    footer a:hover { color: var(--ink); }
+    footer .links { display: flex; gap: 22px; }
+
+    /* ============ RESPONSIVE ============ */
+    @media (max-width: 900px) {
+      .nav-links { display: none; }
+      .nav-links.cta-only { display: flex; }
+      .hero { grid-template-columns: 1fr; padding: 60px 24px 40px; gap: 40px; }
+      .hero-visual { height: 460px; }
+      .hero-panel { left: 20px; }
+      .hero-picker { right: 20px; }
+      h1 { font-size: 56px; }
+      h2 { font-size: 40px; }
+      section { padding: 60px 24px; }
+      .features { grid-template-columns: 1fr; gap: 12px; }
+      .how { grid-template-columns: 1fr; gap: 30px; }
+      .privacy { grid-template-columns: 1fr; padding: 40px 30px; }
+      .privacy h2 { font-size: 32px; }
+      .cta-final h2 { font-size: 42px; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="brand" href="#top">
+      <span class="logo">iT</span>
+      <span class="wm"><span>insta</span><b>Type</b></span>
+    </a>
+    <div class="nav-links">
+      <a href="#features">Funciones</a>
+      <a href="#how">Cómo funciona</a>
+      <a href="#privacy">Privacidad</a>
+      <a href="politica-privacidade.html">Política</a>
+      <span class="lang-switch">
+        <a href="index.html">PT</a>
+        <a href="index-en.html">EN</a>
+        <a href="index-es.html" class="current">ES</a>
+      </span>
+    </div>
+    <div class="nav-links cta-only">
+      <a class="btn" href="#install">Instalar gratis</a>
+    </div>
+  </div>
+</nav>
+
+<section class="hero" id="top">
+  <div>
+    <div class="hero-eyebrow"><span class="dot"></span> v1.0 · Manifest V3 · Chrome y Edge</div>
+    <h1>Tus fragmentos,<br>a <span class="accent">un atajo</span> de distancia.</h1>
+    <p class="hero-lead">
+      Guarda firmas, respuestas guardadas, direcciones, bloques de código — y pégalos en cualquier campo web en dos clics o una combinación de teclas.
+    </p>
+    <div class="hero-cta">
+      <a class="btn btn-large" id="install" href="#" target="_blank" rel="noopener">
+        Instalar en Chrome <span class="badge">GRATIS</span>
+      </a>
+      <a class="btn btn-large" style="background:transparent;color:var(--ink);border-color:var(--ink-2);" href="#how">Ver cómo funciona</a>
+    </div>
+    <div class="hero-trust">
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> 100% offline</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Sem cadastro</span>
+      <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Português, English, Español</span>
+    </div>
+  </div>
+  <div class="hero-visual">
+    <div class="hero-panel">
+      <div class="hp-head">
+        <div class="hp-brand">
+          <div class="hp-logo">iT</div>
+          <div class="hp-wm"><span>insta</span><b>Type</b></div>
+        </div>
+      </div>
+      <div class="hp-newbtn">+ Nuevo fragmento</div>
+      <div class="hp-card">
+        <div class="hp-t">Assinatura de email <span class="hp-s">Global</span></div>
+        <div class="hp-prev">Alex Souza
+Product designer · Studio Atlas</div>
+      </div>
+      <div class="hp-card">
+        <div class="hp-t">Lista de PR <span class="hp-s" style="background:var(--surface-2);color:var(--ink-2)">github.com</span></div>
+        <div class="hp-prev">### Lista
+- [ ] Tests
+- [ ] Sin console.log</div>
+      </div>
+    </div>
+    <div class="hero-picker">
+      <div class="hk-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        assi<span class="caret"></span>
+      </div>
+      <div class="hk-item active">
+        <div class="hk-tt">Assinatura de email <span class="hk-scope">global</span></div>
+        <div class="hk-prev">Alex Souza · Product designer · Studio Atlas</div>
+      </div>
+      <div class="hk-item">
+        <div class="hk-tt">Firma corta</div>
+        <div class="hk-prev">— AS / hello@studioatlas.dev</div>
+      </div>
+    </div>
+    <div class="hero-kbd">
+      <div>
+        <div class="hk-eyebrow">atajo</div>
+        <div class="hk-keys">
+          <kbd>⌥</kbd><kbd>⇧</kbd><kbd>T</kbd>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="section-eyebrow">Funciones</div>
+  <h2>Todo lo que necesitas,<br><span class="accent">nada que estorbe.</span></h2>
+
+  <div class="features">
+    <div class="feature">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 2h6v4H9zm0 0l-4 4M15 2l4 4M3 6h18v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V6z"/></svg>
+      </div>
+      <h3>Menú contextual nativo</h3>
+      <p>Tus plantillas aparecen en el clic derecho de Chrome, en cualquier campo editable. Sin UI superpuesta — directamente en el menú que ya conoces.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M6 14h12"/></svg>
+      </div>
+      <h3>Atajo de teclado</h3>
+      <p>Pulsa la combinación en cualquier campo enfocado y aparece un selector flotante con búsqueda rápida con ↑↓ y Enter.</p>
+      <div class="feat-kbd"><kbd>⌥</kbd><kbd>⇧</kbd><kbd>T</kbd></div>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+      </div>
+      <h3>Alcance por sitio</h3>
+      <p>Marca como global o restríngela a un dominio. Plantillas de trabajo no invaden tu correo personal, fragmentos de código se quedan en GitHub.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v4H4z"/><path d="M4 12h16v8H4z"/><path d="M8 16h8"/></svg>
+      </div>
+      <h3>Panel lateral completo</h3>
+      <p>Panel lateral para crear, editar, organizar, buscar y filtrar toda tu biblioteca — sin salir de la pestaña actual.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+      </div>
+      <h3>Importar y exportar</h3>
+      <p>Mueve tu biblioteca entre dispositivos como un archivo JSON. Respalda, filtra por alcance, restaura cuando quieras.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10A15.3 15.3 0 0 1 8 12a15.3 15.3 0 0 1 4-10z"/></svg>
+      </div>
+      <h3>Multi-idioma</h3>
+      <p>Interfaz en Español, Português y English. Sigue el sistema por defecto; cambiable en cualquier momento.</p>
+    </div>
+  </div>
+</section>
+
+<section id="how">
+  <div class="section-eyebrow">Cómo funciona</div>
+  <h2>Tres caminos<br>para llegar.</h2>
+  <p class="section-lead">Cada camino está optimizado para un momento distinto. Usa el que tenga sentido en cada caso.</p>
+
+  <div class="how">
+    <div class="step">
+      <div class="step-num">01</div>
+      <h3>Clic derecho</h3>
+      <p>En cualquier campo editable, abre el menú contextual. El elemento <b>InstaType</b> aparece con tus plantillas filtradas por el sitio actual.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">02</div>
+      <h3>Atajo de teclado</h3>
+      <p>Pulsa <kbd>⌥</kbd> <kbd>⇧</kbd> <kbd>T</kbd> en cualquier campo enfocado. Aparece un selector flotante con búsqueda, ↑↓ y Enter para elegir.</p>
+    </div>
+    <div class="step">
+      <div class="step-num">03</div>
+      <h3>Panel lateral</h3>
+      <p>Abre el panel lateral de Chrome para gestionar todo: crear, editar, organizar, buscar, filtrar, importar y exportar.</p>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-eyebrow">Capturas</div>
+  <h2>Velo en acción.</h2>
+  <p class="section-lead">Pequeños detalles pensados para el día a día: badges de alcance, búsqueda instantánea, atajo persistente en el pie.</p>
+  <div class="screens">
+    <img src="screenshots/01-sidepanel-es.png" alt="Panel lateral de InstaType">
+    <img src="screenshots/02-shortcut-es.png" alt="Atajo de teclado">
+    <img src="screenshots/03-context-menu-es.png" alt="Menú contextual">
+    <img src="screenshots/04-editor-es.png" alt="Editor de fragmentos">
+    <img src="screenshots/05-i18n-import-es.png" alt="Multi-idioma y portabilidad">
+  </div>
+</section>
+
+<section id="privacy">
+  <div class="privacy">
+    <div>
+      <div class="section-eyebrow" style="color: var(--accent);">Privacidad</div>
+      <h2>Tus datos<br>se quedan <span class="accent">contigo.</span></h2>
+      <p>Sin cuentas, sin servidores, sin analítica, sin telemetría. Todo se guarda localmente en tu navegador vía <code style="background:rgba(255,91,46,0.18);color:white;padding:2px 6px;border-radius:4px;font-family:var(--font-mono);font-size:0.85em">chrome.storage.local</code>. Nada sale de tu dispositivo.</p>
+      <a class="privacy-link" href="politica-privacidade.html">
+        Leer la política completa →
+      </a>
+    </div>
+    <div class="privacy-points">
+      <div class="p"><span><b>Cero recolección.</b> No enviamos datos a ningún lado.</span></div>
+      <div class="p"><span><b>Sin rastreadores.</b> Sin analítica ni identificadores únicos.</span></div>
+      <div class="p"><span><b>Abierto.</b> Exporta todo como JSON cuando quieras.</span></div>
+      <div class="p"><span><b>Mínimo.</b> Cada permiso tiene un propósito visible.</span></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="section-eyebrow">FAQ</div>
+  <h2>Preguntas comunes.</h2>
+  <div class="faq" style="margin-top: 40px;">
+    <details>
+      <summary>¿InstaType funciona sin conexión?</summary>
+      <p>Sí. Toda la funcionalidad se ejecuta 100% localmente en tu navegador. El único requisito de internet son las fuentes de Google Fonts en el panel lateral (Chrome las cachea tras la primera carga).</p>
+    </details>
+    <details>
+      <summary>¿Dónde se guardan mis plantillas?</summary>
+      <p>En el almacenamiento local de Chrome, vinculado al perfil del navegador en el dispositivo donde está instalada la extensión. Si usas el mismo perfil Chrome en varios dispositivos con sincronización activa, los datos <em>no</em> se sincronizan automáticamente — para eso usa <b>Importar y exportar</b>.</p>
+    </details>
+    <details>
+      <summary>¿Funciona en todos los sitios?</summary>
+      <p>Sí, en cualquier página con campos editables: inputs, textareas y divs <code>contenteditable</code>. Probado en editores rich-text como Gmail, Notion, Linear, Slack, Discord y WhatsApp Web.</p>
+    </details>
+    <details>
+      <summary>El atajo no funciona, ¿qué hago?</summary>
+      <p>Ve a <code>chrome://extensions/shortcuts</code>, busca <b>InstaType</b> y asigna manualmente la combinación. Chrome a veces no asigna el atajo sugerido cuando hay conflicto con otra extensión.</p>
+    </details>
+    <details>
+      <summary>¿Las plantillas soportan variables?</summary>
+      <p>La versión 1.0 inserta el texto tal cual está guardado. Variables dinámicas (como <code>{{nombre}}</code>, <code>{{fecha}}</code>, <code>{{clipboard}}</code>) están planeadas para una futura versión.</p>
+    </details>
+    <details>
+      <summary>¿Tiene algún costo?</summary>
+      <p>No. Gratis, sin versión de pago, sin publicidad. Software independiente, sin modelo de monetización.</p>
+    </details>
+  </div>
+</section>
+
+<div class="cta-final">
+  <div class="section-eyebrow" style="margin-bottom: 16px;">¿Listo?</div>
+  <h2>Deja de escribir<br>lo mismo.</h2>
+  <p class="section-lead">Instala en 10 segundos. Guarda tu primera plantilla en 30. Úsala el resto del día.</p>
+  <a class="btn btn-large" href="#install">
+    Instalar en Chrome <span class="badge">GRATIS</span>
+  </a>
+</div>
+
+<footer>
+  <span>© 2026 InstaType — hecho con café en Florianópolis</span>
+  <div class="links">
+    <a href="politica-privacidade.html">Privacidad</a>
+    <a href="mailto:contato@s3web.com.br">Contacto</a>
+    <a href="#top">Arriba</a>
+  </div>
+</footer>
+
+</body>
+</html>

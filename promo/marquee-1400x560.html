@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>InstaType — marquee 1400x560</title>
+<link rel="stylesheet" href="../_shared.css">
+<style>
+  html, body { width: 1400px; height: 560px; overflow: hidden; }
+  body {
+    background:
+      radial-gradient(ellipse 60% 100% at 100% 120%, rgba(255,91,46,0.16), transparent 55%),
+      radial-gradient(ellipse 40% 80% at -5% 10%, rgba(255,126,77,0.12), transparent 60%),
+      var(--bg);
+    padding: 60px 80px;
+    display: grid;
+    grid-template-columns: 1fr 380px;
+    align-items: center;
+    gap: 80px;
+    position: relative;
+  }
+  body::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(28,26,23,0.04) 1px, transparent 1px);
+    background-size: 6px 6px;
+    pointer-events: none;
+  }
+  .left { position: relative; z-index: 2; }
+  .brand-line {
+    display: flex; align-items: center; gap: 16px; margin-bottom: 32px;
+  }
+  .brand-logo {
+    width: 64px; height: 64px;
+    border-radius: 16px;
+    background: linear-gradient(135deg, var(--accent-2), var(--accent));
+    display: grid; place-items: center;
+    color: white;
+    font-family: var(--font-serif); font-style: italic; font-size: 40px;
+    box-shadow: 0 12px 32px rgba(255,91,46,0.42);
+    letter-spacing: -0.02em;
+  }
+  .wordmark {
+    font-family: var(--font-serif); font-style: italic;
+    font-size: 56px; letter-spacing: -0.025em; line-height: 1;
+    display: inline-flex; align-items: baseline;
+  }
+  .wordmark b {
+    font-style: normal; font-family: var(--font-sans);
+    font-weight: 700; font-size: 48px; margin-left: -3px;
+    letter-spacing: -0.028em;
+  }
+  h1 {
+    font-family: var(--font-serif); font-style: italic;
+    font-size: 78px; line-height: 0.98; letter-spacing: -0.025em;
+    color: var(--ink); margin-bottom: 28px; max-width: 740px;
+    font-weight: 400;
+  }
+  h1 b {
+    font-style: normal; font-weight: 700;
+    font-family: var(--font-sans);
+    letter-spacing: -0.03em;
+  }
+  .accent { color: var(--accent-deep); }
+  .tagline {
+    font-size: 22px; color: var(--ink-2); line-height: 1.45; max-width: 600px;
+    margin-bottom: 36px;
+  }
+  .features {
+    display: flex; gap: 28px;
+    font-size: 14px; font-weight: 500; color: var(--ink);
+  }
+  .feat {
+    display: flex; align-items: center; gap: 8px;
+  }
+  .feat-dot {
+    width: 8px; height: 8px; border-radius: 2px;
+    background: var(--accent);
+  }
+
+  /* Right: floating panel preview */
+  .panel-stage {
+    position: relative; z-index: 2;
+    height: 100%;
+    display: grid; place-items: center;
+  }
+  .panel-frame {
+    width: 360px; height: 480px;
+    transform: rotate(-2deg);
+  }
+  .picker-overlay {
+    position: absolute;
+    bottom: 40px; right: -60px;
+    width: 280px;
+    background: white; border-radius: 12px;
+    border: 1px solid var(--line);
+    box-shadow: 0 24px 48px rgba(28,26,23,0.22);
+    overflow: hidden;
+    transform: rotate(3deg);
+  }
+  .picker-search {
+    padding: 8px 12px; border-bottom: 1px solid #f0ebe0;
+    display: flex; align-items: center; gap: 8px;
+    font-family: var(--font-sans); font-size: 12.5px; color: var(--muted);
+  }
+  .picker-search svg { width: 13px; height: 13px; color: var(--muted); }
+  .picker-item {
+    padding: 9px 12px; border-bottom: 1px solid #f5f1e7;
+    font-size: 12px;
+  }
+  .picker-item.active { background: var(--surface-2); }
+  .picker-item .pi-title {
+    font-weight: 600; color: var(--ink);
+    display: flex; align-items: center; justify-content: space-between; margin-bottom: 2px;
+  }
+  .picker-item .pi-scope {
+    font-size: 9.5px; font-weight: 600;
+    background: var(--accent-soft); color: var(--accent-deep);
+    padding: 1px 6px; border-radius: 4px;
+  }
+  .picker-item .pi-prev {
+    font-family: var(--font-mono); font-size: 11px;
+    color: var(--ink-2); white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+</style>
+</head>
+<body>
+  <div class="left">
+    <div class="brand-line">
+      <div class="brand-logo">iT</div>
+      <div class="wordmark"><span>insta</span><b>Type</b></div>
+    </div>
+    <h1>Your <b>text snippets,</b><br>one <span class="accent">shortcut away.</span></h1>
+    <p class="tagline">Save replies, signatures, addresses, code blocks — paste them anywhere on the web with a right-click or a keystroke.</p>
+    <div class="features">
+      <div class="feat"><span class="feat-dot"></span>Global &amp; per-site scopes</div>
+      <div class="feat"><span class="feat-dot"></span>Works in any input</div>
+      <div class="feat"><span class="feat-dot"></span>Import &amp; export</div>
+    </div>
+  </div>
+
+  <div class="panel-stage">
+    <div class="panel-frame">
+      <div class="header">
+        <div class="brand-row">
+          <div class="brand">
+            <div class="logo">iT</div>
+            <div class="brand-name"><span>insta</span><b>Type</b></div>
+          </div>
+          <button class="kebab"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
+        </div>
+      </div>
+      <div class="new-row">
+        <div class="btn-new"><span class="plus">+</span> New snippet</div>
+      </div>
+      <div class="toolbar">
+        <div class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <span class="q empty">Search…</span>
+        </div>
+        <div class="filters">
+          <div class="filter active"><span class="filter-label">All</span><span class="count">07</span></div>
+          <div class="filter"><span class="filter-label">Global</span><span class="count">04</span></div>
+          <div class="filter"><span class="filter-label">This site<em class="filter-sub">github.com</em></span><span class="count">03</span></div>
+        </div>
+      </div>
+      <div class="list">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Email signature</div>
+            <span class="scope global">Global</span>
+          </div>
+          <div class="card-content">Alex Souza
+Product designer · Studio Atlas
++55 48 99999-0000</div>
+          <div class="card-foot">
+            <span>Yesterday</span>
+            <div class="card-actions"><span>Edit</span><span>Delete</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">PR review checklist</div>
+            <span class="scope">github.com</span>
+          </div>
+          <div class="card-content">### Review checklist
+- [ ] Tests pass
+- [ ] No console logs</div>
+          <div class="card-foot">
+            <span>3 days ago</span>
+            <div class="card-actions"><span>Edit</span><span>Delete</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="shortcut-bar">
+        <span>Shortcut on any field</span>
+        <span class="kbd-row"><kbd>⌥</kbd><kbd>⇧</kbd><kbd>T</kbd></span>
+      </div>
+    </div>
+    <div class="picker-overlay">
+      <div class="picker-search">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+        sig
+      </div>
+      <div class="picker-item active">
+        <div class="pi-title">Email signature <span class="pi-scope">global</span></div>
+        <div class="pi-prev">Alex Souza · Product designer…</div>
+      </div>
+      <div class="picker-item">
+        <div class="pi-title">Personal address</div>
+        <div class="pi-prev">Rua das Palmeiras, 245 — Florianópolis, SC</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,235 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>InstaType — Menu de contexto</title>
+<link rel="stylesheet" href="../_shared.css">
+<style>
+  html, body { width: 1280px; height: 800px; overflow: hidden; }
+  body {
+    background:
+      radial-gradient(ellipse 60% 80% at 0% 100%, rgba(255,91,46,0.18), transparent 55%),
+      var(--bg);
+    padding: 60px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 60px;
+    position: relative;
+  }
+  body::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(28,26,23,0.04) 1.5px, transparent 1.5px);
+    background-size: 6px 6px;
+    pointer-events: none;
+  }
+  .left { position: relative; z-index: 2; }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--accent-deep); font-weight: 700; margin-bottom: 22px;
+  }
+  h1 {
+    font-family: var(--font-serif); font-style: italic;
+    font-size: 80px; line-height: 0.97; letter-spacing: -0.025em;
+    color: var(--ink); margin-bottom: 24px;
+    font-weight: 400;
+  }
+  h1 b {
+    font-style: normal; font-weight: 700;
+    font-family: var(--font-sans); letter-spacing: -0.03em;
+  }
+  .accent { color: var(--accent-deep); }
+  .tagline { font-size: 22px; color: var(--ink-2); line-height: 1.45; max-width: 520px; margin-bottom: 26px; }
+  .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--ink); color: var(--bg);
+    border-radius: 999px; padding: 8px 14px 8px 10px;
+    font-size: 13px; font-weight: 600;
+  }
+  .pill .dot { width: 8px; height: 8px; background: var(--accent); border-radius: 2px; }
+
+  .right { position: relative; z-index: 2; display: grid; place-items: center; }
+  .browser {
+    width: 560px; height: 560px;
+    background: white; border-radius: 14px;
+    border: 1px solid var(--line);
+    box-shadow: 0 24px 60px rgba(28,26,23,0.18);
+    overflow: hidden;
+    position: relative;
+  }
+  .browser-bar {
+    height: 36px; background: var(--surface-2);
+    border-bottom: 1px solid var(--line);
+    display: flex; align-items: center; padding: 0 14px; gap: 8px;
+  }
+  .browser-bar .dot { width: 10px; height: 10px; border-radius: 50%; }
+  .browser-bar .red { background: #ff5f57; }
+  .browser-bar .yel { background: #febc2e; }
+  .browser-bar .grn { background: #28c840; }
+  .browser-bar .url {
+    margin-left: 12px; flex: 1; background: white;
+    border-radius: 6px; padding: 4px 10px; font-size: 11px;
+    color: var(--ink-2); font-family: var(--font-mono);
+  }
+  .doc {
+    padding: 26px;
+  }
+  .doc h2 {
+    font-family: var(--font-serif);
+    font-size: 22px; margin-bottom: 8px; color: var(--ink);
+    font-weight: 600;
+  }
+  .doc .sub { font-size: 12px; color: var(--muted); margin-bottom: 16px; }
+  .field-row { margin-bottom: 12px; }
+  .field-row label {
+    display: block; font-size: 11.5px; font-weight: 600;
+    color: var(--ink-2); margin-bottom: 5px;
+  }
+  .field-row input, .field-row textarea {
+    width: 100%; border: 1px solid var(--line); border-radius: 7px;
+    padding: 8px 10px; font-size: 13px; font-family: var(--font-sans);
+    background: white; color: var(--ink);
+  }
+  .field-row textarea {
+    min-height: 100px; resize: none;
+    border: 2px solid var(--accent);
+    background: var(--accent-soft);
+    box-shadow: 0 0 0 4px rgba(255,91,46,0.12);
+  }
+
+  /* macOS-style context menu */
+  .ctx {
+    position: absolute;
+    top: 230px; left: 260px;
+    width: 250px;
+    background: rgba(245, 245, 247, 0.96);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 8px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+    padding: 4px;
+    font-family: -apple-system, system-ui, sans-serif;
+    font-size: 13px;
+  }
+  .ctx-item {
+    padding: 5px 10px;
+    border-radius: 4px;
+    display: flex; align-items: center; justify-content: space-between;
+    color: #1c1c1e;
+  }
+  .ctx-item .right-arrow {
+    color: rgba(0,0,0,0.5); font-size: 10px;
+  }
+  .ctx-item.it-root {
+    background: linear-gradient(180deg, #4c8cff, #2974ff);
+    color: white;
+    font-weight: 500;
+  }
+  .ctx-item.it-root::before {
+    content: '';
+    display: inline-block;
+    width: 14px; height: 14px;
+    margin-right: 8px;
+    border-radius: 4px;
+    background: linear-gradient(135deg, var(--accent-2), var(--accent));
+  }
+  .ctx-sep { height: 1px; background: rgba(0,0,0,0.08); margin: 3px 6px; }
+  .ctx-disabled { color: rgba(0,0,0,0.35); }
+
+  /* InstaType submenu */
+  .submenu {
+    position: absolute;
+    top: 230px; left: 506px;
+    width: 240px;
+    background: rgba(245, 245, 247, 0.96);
+    backdrop-filter: blur(20px);
+    border: 1px solid rgba(0,0,0,0.08);
+    border-radius: 8px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+    padding: 4px;
+    font-family: -apple-system, system-ui, sans-serif;
+    font-size: 13px;
+  }
+  .submenu .sub-eyebrow {
+    padding: 4px 10px 4px;
+    font-size: 10px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: rgba(0,0,0,0.5); font-weight: 600;
+  }
+  .submenu .sub-item {
+    padding: 5px 10px;
+    border-radius: 4px;
+    color: #1c1c1e;
+    display: flex; align-items: center;
+  }
+  .submenu .sub-item.scope-mark::before {
+    content: '@'; color: var(--accent-deep);
+    font-family: var(--font-mono); font-weight: 700;
+    margin-right: 6px; font-size: 11px;
+  }
+  .submenu .sub-item.global::before {
+    content: '★'; color: var(--accent);
+    margin-right: 6px; font-size: 11px;
+  }
+  .submenu .sub-item.hover {
+    background: linear-gradient(180deg, #4c8cff, #2974ff);
+    color: white;
+  }
+  .submenu .sub-item.hover::before { color: white; }
+</style>
+</head>
+<body>
+  <div class="left">
+    <div class="eyebrow">Menu de contexto</div>
+    <h1>Menu nativo,<br><span class="accent">sem UI extra.</span></h1>
+    <p class="tagline">O InstaType vive no menu de contexto do navegador. Clique direito em qualquer campo — seus snippets estão ali, filtrados pelo site atual.</p>
+    <div class="pill"><span class="dot"></span>Funciona em qualquer campo editável</div>
+  </div>
+
+  <div class="right">
+    <div class="browser">
+      <div class="browser-bar">
+        <span class="dot red"></span><span class="dot yel"></span><span class="dot grn"></span>
+        <div class="url">support.example.com/new-ticket</div>
+      </div>
+      <div class="doc">
+        <h2>Novo chamado de suporte</h2>
+        <div class="sub">Responda com um de seus templates salvos.</div>
+        <div class="field-row">
+          <label>Assunto</label>
+          <input value="Problema no deploy">
+        </div>
+        <div class="field-row">
+          <label>Mensagem</label>
+          <textarea>Olá, obrigado pelo contato. Pode compartilhar</textarea>
+        </div>
+      </div>
+      <div class="ctx">
+        <div class="ctx-item">Voltar</div>
+        <div class="ctx-item ctx-disabled">Avançar</div>
+        <div class="ctx-item">Recarregar</div>
+        <div class="ctx-sep"></div>
+        <div class="ctx-item">Salvar como…</div>
+        <div class="ctx-item">Imprimir…</div>
+        <div class="ctx-sep"></div>
+        <div class="ctx-item it-root">InstaType<span class="right-arrow">▶</span></div>
+        <div class="ctx-item">Salvar seleção no InstaType</div>
+        <div class="ctx-sep"></div>
+        <div class="ctx-item">Inspecionar</div>
+      </div>
+      <div class="submenu">
+        <div class="sub-eyebrow">Deste site</div>
+        <div class="sub-item scope-mark">Resposta padrão</div>
+        <div class="sub-item scope-mark hover">Template de follow-up</div>
+        <div class="sub-item scope-mark">Script de escalada</div>
+        <div class="ctx-sep"></div>
+        <div class="sub-eyebrow">Global</div>
+        <div class="sub-item global">Assinatura de email</div>
+        <div class="sub-item global">Número de telefone</div>
+        <div class="sub-item global">Endereço postal</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

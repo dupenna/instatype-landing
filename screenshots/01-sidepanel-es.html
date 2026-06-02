@@ -1,0 +1,148 @@
+<!doctype html>
+<html lang="es-ES">
+<head>
+<meta charset="UTF-8">
+<title>InstaType — Side Panel</title>
+<link rel="stylesheet" href="../_shared.css">
+<style>
+  html, body { width: 1280px; height: 800px; overflow: hidden; }
+  body {
+    background:
+      radial-gradient(ellipse 40% 60% at 100% 100%, rgba(255,91,46,0.18), transparent 55%),
+      radial-gradient(ellipse 40% 60% at 0% 0%, rgba(255,126,77,0.13), transparent 60%),
+      var(--bg);
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    align-items: center;
+    padding: 60px 60px 60px 80px;
+    gap: 50px;
+    position: relative;
+  }
+  body::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(28,26,23,0.04) 1.5px, transparent 1.5px);
+    background-size: 6px 6px;
+    pointer-events: none;
+  }
+  .left { position: relative; z-index: 2; }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--accent-deep); font-weight: 700; margin-bottom: 22px;
+  }
+  h1 {
+    font-family: var(--font-serif); font-style: italic;
+    font-size: 90px; line-height: 0.97; letter-spacing: -0.025em;
+    color: var(--ink); margin-bottom: 28px; max-width: 700px;
+    font-weight: 400;
+  }
+  h1 b {
+    font-style: normal; font-weight: 700;
+    font-family: var(--font-sans); letter-spacing: -0.03em;
+  }
+  .accent { color: var(--accent-deep); }
+  .tagline {
+    font-size: 22px; color: var(--ink-2); line-height: 1.45; max-width: 540px;
+  }
+  .bullets {
+    margin-top: 36px; display: flex; flex-direction: column; gap: 14px;
+    font-size: 16px; color: var(--ink);
+  }
+  .bullet { display: flex; align-items: center; gap: 12px; font-weight: 500; }
+  .bullet::before {
+    content: ''; width: 9px; height: 9px;
+    background: var(--accent); border-radius: 3px;
+  }
+
+  .right { position: relative; z-index: 2; display: grid; place-items: center; }
+  .panel-frame {
+    width: 380px; height: 660px;
+  }
+</style>
+</head>
+<body>
+  <div class="left">
+    <div class="eyebrow">Panel lateral</div>
+    <h1>Una biblioteca<br>para tu <span class="accent">texto</span>.</h1>
+    <p class="tagline">Crea, busca, organiza y edita tus fragmentos sin salir de la pestaña.</p>
+    <div class="bullets">
+      <div class="bullet">Marca un fragmento como <b>Globales</b> o restringelo a un dominio</div>
+      <div class="bullet">Filtra por sitio y enfócate en lo relevante <b>ahora</b></div>
+      <div class="bullet"><b>Importar y exportar</b> integrado para respaldo o sincronizar dispositivos</div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="panel-frame">
+      <div class="header">
+        <div class="brand-row">
+          <div class="brand">
+            <div class="logo">iT</div>
+            <div class="brand-name"><span>insta</span><b>Type</b></div>
+          </div>
+          <button class="kebab"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg></button>
+        </div>
+      </div>
+      <div class="new-row">
+        <div class="btn-new"><span class="plus">+</span> Nuevo fragmento</div>
+      </div>
+      <div class="toolbar">
+        <div class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+          <span class="q empty">Buscar…</span>
+        </div>
+        <div class="filters">
+          <div class="filter active"><span class="filter-label">Todo</span><span class="count">07</span></div>
+          <div class="filter"><span class="filter-label">Globales</span><span class="count">04</span></div>
+          <div class="filter"><span class="filter-label">Este sitio<em class="filter-sub">github.com</em></span><span class="count">03</span></div>
+        </div>
+      </div>
+      <div class="list">
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Firma de correo</div>
+            <span class="scope global">Globales</span>
+          </div>
+          <div class="card-content">Alex Souza
+Product designer · Studio Atlas
++55 48 99999-0000</div>
+          <div class="card-foot">
+            <span>Ayer</span>
+            <div class="card-actions"><span>Editar</span><span>Eliminar</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">Lista de revisión de PR</div>
+            <span class="scope">github.com</span>
+          </div>
+          <div class="card-content">### Lista de revisión
+- [ ] Tests pasan
+- [ ] Sin console.log
+- [ ] Migraciones reversibles</div>
+          <div class="card-foot">
+            <span>hace 3 días</span>
+            <div class="card-actions"><span>Editar</span><span>Eliminar</span></div>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-head">
+            <div class="card-title">RFC</div>
+            <span class="scope global">Globales</span>
+          </div>
+          <div class="card-content">123.456.789-00</div>
+          <div class="card-foot">
+            <span>La semana pasada</span>
+            <div class="card-actions"><span>Editar</span><span>Eliminar</span></div>
+          </div>
+        </div>
+      </div>
+      <div class="shortcut-bar">
+        <span>Atajo en cualquier campo</span>
+        <span class="kbd-row"><kbd>⌥</kbd><kbd>⇧</kbd><kbd>T</kbd></span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

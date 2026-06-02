@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>InstaType — Editor</title>
+<link rel="stylesheet" href="../_shared.css">
+<style>
+  html, body { width: 1280px; height: 800px; overflow: hidden; }
+  body {
+    background:
+      radial-gradient(ellipse 50% 60% at 100% 100%, rgba(255,126,77,0.16), transparent 55%),
+      var(--bg);
+    padding: 60px 80px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 80px;
+    position: relative;
+  }
+  body::after {
+    content: '';
+    position: absolute; inset: 0;
+    background-image: radial-gradient(rgba(28,26,23,0.04) 1.5px, transparent 1.5px);
+    background-size: 6px 6px;
+    pointer-events: none;
+  }
+  .left { position: relative; z-index: 2; }
+  .eyebrow {
+    font-family: var(--font-mono);
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.18em;
+    color: var(--accent-deep); font-weight: 700; margin-bottom: 22px;
+  }
+  h1 {
+    font-family: var(--font-serif); font-style: italic;
+    font-size: 80px; line-height: 0.97; letter-spacing: -0.025em;
+    color: var(--ink); margin-bottom: 24px;
+    font-weight: 400;
+  }
+  h1 b {
+    font-style: normal; font-weight: 700;
+    font-family: var(--font-sans); letter-spacing: -0.03em;
+  }
+  .accent { color: var(--accent-deep); }
+  .tagline { font-size: 22px; color: var(--ink-2); line-height: 1.45; max-width: 540px; }
+  .bullets { margin-top: 36px; display: flex; flex-direction: column; gap: 14px; font-size: 16px; color: var(--ink); }
+  .bullet { display: flex; align-items: flex-start; gap: 12px; font-weight: 500; }
+  .bullet::before { content: ''; width: 9px; height: 9px; background: var(--accent); border-radius: 3px; margin-top: 8px; flex-shrink: 0; }
+
+  .right { position: relative; z-index: 2; display: grid; place-items: center; }
+  .modal {
+    width: 400px;
+    background: white;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    box-shadow: 0 30px 70px rgba(28,26,23,0.25);
+    padding: 22px 22px 18px;
+  }
+  .modal-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 10.5px; text-transform: uppercase; letter-spacing: 0.14em;
+    color: var(--accent-deep); margin-bottom: 6px;
+  }
+  .modal h2 {
+    font-family: var(--font-serif); font-weight: 400; font-style: italic;
+    font-size: 24px; letter-spacing: -0.01em; line-height: 1.05;
+    margin-bottom: 18px;
+  }
+  .field { margin-bottom: 14px; }
+  .field-label {
+    display: flex; align-items: baseline; justify-content: space-between;
+    font-size: 11.5px; font-weight: 500; color: var(--ink-2); margin-bottom: 6px;
+  }
+  .field-label .counter {
+    font-family: var(--font-mono); font-size: 10.5px; color: var(--muted);
+  }
+  .field-label .counter b {
+    font-family: var(--font-mono); font-weight: 600; color: var(--ink); margin-left: 3px;
+  }
+  .field input, .field textarea {
+    width: 100%; font-size: 13px; color: var(--ink);
+    background: var(--bg); border: 1px solid var(--line); border-radius: 10px;
+    padding: 9px 11px; font-family: var(--font-sans);
+  }
+  .field textarea {
+    font-family: var(--font-mono); font-size: 12.5px;
+    min-height: 110px; resize: none; line-height: 1.55;
+  }
+  .scope-toggle {
+    display: flex; padding: 3px;
+    background: var(--bg); border: 1px solid var(--line);
+    border-radius: 10px; font-size: 12px; font-weight: 500;
+  }
+  .scope-toggle div {
+    flex: 1; padding: 7px 8px; color: var(--ink-2);
+    border-radius: 7px; text-align: center;
+  }
+  .scope-toggle div.active { background: var(--ink); color: white; }
+  .quick-set {
+    margin-top: 8px; display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 10px; background: var(--accent-soft); color: var(--accent-deep);
+    border-radius: 8px; font-size: 11.5px; font-weight: 500;
+  }
+  .quick-set b { font-family: var(--font-mono); font-weight: 600; }
+  .quick-set svg { width: 12px; height: 12px; }
+  .modal-actions {
+    display: flex; justify-content: flex-end; gap: 8px;
+    margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line);
+  }
+  .modal-actions div {
+    padding: 9px 16px; border-radius: 10px;
+    font-weight: 600; font-size: 12.5px;
+  }
+  .btn-cancel { color: var(--ink-2); }
+  .btn-save {
+    background: var(--ink); color: white;
+    display: inline-flex; align-items: center; gap: 7px;
+  }
+  .btn-save::before {
+    content: ''; width: 8px; height: 8px;
+    background: var(--accent); border-radius: 3px;
+  }
+</style>
+</head>
+<body>
+  <div class="left">
+    <div class="eyebrow">Per-site scopes</div>
+    <h1>One library,<br><span class="accent">smart</span> scopes.</h1>
+    <p class="tagline">Mark snippets as global or scope them to a single domain. Right-click and the menu auto-filters to what's relevant for the page you're on.</p>
+    <div class="bullets">
+      <div class="bullet">Snippets you only need on <b>github.com</b>, stay on <b>github.com</b></div>
+      <div class="bullet">Toggle between global and site-specific in one click</div>
+      <div class="bullet">Quick-set to the current tab when scoping</div>
+    </div>
+  </div>
+
+  <div class="right">
+    <div class="modal">
+      <div class="modal-eyebrow">New snippet</div>
+      <h2>Compose a snippet.</h2>
+      <div class="field">
+        <div class="field-label">
+          <span>Title</span>
+          <span class="counter">required</span>
+        </div>
+        <input value="PR review checklist">
+      </div>
+      <div class="field">
+        <div class="field-label">
+          <span>Content</span>
+          <span class="counter">96 chars</span>
+        </div>
+        <textarea>### Review checklist
+- [ ] Tests pass
+- [ ] No console logs
+- [ ] Migrations reversible</textarea>
+      </div>
+      <div class="field">
+        <div class="field-label">
+          <span>Scope</span>
+          <span class="counter">Applies to <b>github.com</b></span>
+        </div>
+        <div class="scope-toggle">
+          <div>Global</div>
+          <div class="active">Specific site</div>
+        </div>
+      </div>
+      <div class="field">
+        <div class="field-label"><span>Domain</span></div>
+        <input value="github.com">
+      </div>
+      <div class="modal-actions">
+        <div class="btn-cancel">Cancel</div>
+        <div class="btn-save">Save</div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
