@@ -1,0 +1,1354 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>InstaType — Demo Video</title>
+  <meta name="viewport" content="width=1920, initial-scale=1">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@400;500;600;700;800&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    /* ---------- Palette: identical to landing ---------- */
+    :root {
+      --bg: #faf7f2;
+      --bg-deep: #f0ece4;
+      --ink: #1c1a17;
+      --ink-2: #5b5751;
+      --ink-3: #8c877e;
+      --line: #e3ddd1;
+      --surface: #ffffff;
+      --accent: #ff5b2e;
+      --accent-2: #ff7e4d;
+      --accent-soft: #ffe8df;
+      --accent-deep: #b53b16;
+
+      --sans: "Geist", -apple-system, system-ui, sans-serif;
+      --display: "Instrument Serif", Georgia, serif;
+      --mono: "Geist Mono", ui-monospace, monospace;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      width: 100%; height: 100%;
+      background: #0e0c0a;
+      overflow: hidden;
+      font-family: var(--sans);
+      color: var(--ink);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ---------- Stage: fixed 1920x1080, scaled to fit ---------- */
+    .stage-wrap {
+      position: fixed; inset: 0;
+      display: grid; place-items: center;
+      background: radial-gradient(ellipse at 50% 40%, #1a1612 0%, #0a0806 90%);
+    }
+
+    .stage {
+      position: relative;
+      width: 1920px; height: 1080px;
+      background: var(--bg);
+      transform-origin: center center;
+      overflow: hidden;
+      box-shadow: 0 60px 120px -30px rgba(0,0,0,.7), 0 0 0 1px rgba(255,255,255,.04);
+    }
+
+    /* ---------- Decorative bg pattern ---------- */
+    .stage::before {
+      content: "";
+      position: absolute; inset: 0;
+      background-image:
+        radial-gradient(circle at 18% 22%, rgba(255,91,46,.06), transparent 45%),
+        radial-gradient(circle at 82% 78%, rgba(255,91,46,.04), transparent 50%);
+      pointer-events: none;
+    }
+
+    /* ---------- Browser frame ---------- */
+    .browser {
+      position: absolute;
+      top: 90px; left: 110px;
+      width: 1700px; height: 900px;
+      background: var(--surface);
+      border-radius: 22px;
+      box-shadow:
+        0 1px 0 rgba(255,255,255,.7) inset,
+        0 30px 60px -20px rgba(28,26,23,.18),
+        0 8px 20px -8px rgba(28,26,23,.10),
+        0 0 0 1px rgba(28,26,23,.06);
+      overflow: hidden;
+    }
+
+    .chrome {
+      height: 58px;
+      background: linear-gradient(180deg, #f6f2eb, #ece6dc);
+      border-bottom: 1px solid var(--line);
+      display: flex; align-items: center;
+      padding: 0 22px;
+      gap: 22px;
+    }
+    .traffic { display: flex; gap: 9px; }
+    .traffic span {
+      width: 14px; height: 14px; border-radius: 50%;
+      box-shadow: 0 0 0 0.5px rgba(0,0,0,.15) inset;
+    }
+    .traffic span:nth-child(1) { background: #ff5f57; }
+    .traffic span:nth-child(2) { background: #febc2e; }
+    .traffic span:nth-child(3) { background: #28c840; }
+
+    .urlbar {
+      flex: 1; max-width: 760px; margin: 0 auto;
+      height: 34px; background: #fbf8f2;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      display: flex; align-items: center;
+      padding: 0 14px;
+      font-family: var(--mono); font-size: 13px;
+      color: var(--ink-2);
+      gap: 10px;
+    }
+    .urlbar::before {
+      content: "";
+      width: 12px; height: 12px;
+      border: 1.5px solid var(--ink-3);
+      border-radius: 50%;
+      position: relative;
+    }
+
+    .viewport {
+      position: relative;
+      width: 100%; height: calc(900px - 58px);
+      background: var(--surface);
+    }
+
+    /* ---------- Scenes (stacked) ---------- */
+    .scene {
+      position: absolute; inset: 0;
+      opacity: 0;
+      transition: opacity .55s ease-in-out;
+      pointer-events: none;
+    }
+    body.show-s1 .scene-1,
+    body.show-s2 .scene-2,
+    body.show-s3 .scene-3,
+    body.show-outro .scene-outro { opacity: 1; }
+
+    /* ---------- Caption ---------- */
+    .caption-wrap {
+      position: absolute;
+      bottom: 32px; left: 0; right: 0;
+      display: grid; place-items: center;
+      z-index: 50;
+    }
+    .caption {
+      background: var(--ink);
+      color: var(--bg);
+      font-family: var(--display);
+      font-style: italic;
+      font-size: 38px;
+      line-height: 1;
+      padding: 22px 40px 26px;
+      border-radius: 999px;
+      letter-spacing: -.01em;
+      opacity: 0; transform: translateY(14px);
+      transition: opacity .5s ease, transform .5s ease;
+      box-shadow: 0 20px 40px -10px rgba(28,26,23,.45);
+      white-space: nowrap;
+    }
+    .caption .num {
+      display: inline-block;
+      font-family: var(--mono);
+      font-style: normal;
+      font-size: 16px;
+      color: var(--accent-2);
+      letter-spacing: .15em;
+      margin-right: 14px;
+      vertical-align: 5px;
+    }
+    body.show-s1 .cap-1,
+    body.show-s2 .cap-2,
+    body.show-s3 .cap-3,
+    body.show-outro .cap-outro {
+      opacity: 1; transform: translateY(0);
+    }
+
+    /* ---------- Simulated cursor ---------- */
+    .cursor {
+      position: absolute;
+      width: 28px; height: 32px;
+      left: -40px; top: -40px;
+      transform: translate(0,0);
+      transition: transform .9s cubic-bezier(.4,.0,.2,1), opacity .35s ease;
+      pointer-events: none;
+      z-index: 60;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,.18));
+      opacity: 0;
+    }
+    .cursor svg { width: 100%; height: 100%; display: block; }
+    .cursor.click::after {
+      content: ""; position: absolute;
+      left: 4px; top: 4px;
+      width: 18px; height: 18px;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      animation: ringPulse .45s ease-out forwards;
+    }
+    @keyframes ringPulse {
+      0% { transform: scale(.4); opacity: 1; }
+      100% { transform: scale(2.2); opacity: 0; }
+    }
+
+    body.show-s1 .cursor,
+    body.show-s2 .cursor,
+    body.show-s3 .cursor { opacity: 1; }
+
+    /* =====================================================
+       SCENE 1 — Side Panel + Save new template
+       ===================================================== */
+    .scene-1 { display: grid; grid-template-columns: 440px 1fr; }
+
+    .sp {
+      background: var(--bg);
+      border-right: 1px solid var(--line);
+      padding: 28px 24px;
+      display: flex; flex-direction: column;
+      gap: 18px;
+    }
+    .sp-header { display: flex; align-items: center; gap: 12px; }
+    .sp-logo {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      display: grid; place-items: center;
+      color: white;
+      font-family: var(--display);
+      font-size: 24px; line-height: 1;
+      box-shadow: 0 6px 14px -4px rgba(255,91,46,.45);
+    }
+    .sp-title { font-size: 22px; font-weight: 700; letter-spacing: -.01em; }
+    .sp-sub { font-size: 13px; color: var(--ink-2); }
+
+    .sp-search {
+      height: 40px; background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      display: flex; align-items: center;
+      padding: 0 14px;
+      font-size: 14px; color: var(--ink-3);
+      gap: 10px;
+    }
+    .sp-search::before {
+      content: ""; width: 14px; height: 14px;
+      border: 1.5px solid var(--ink-3); border-radius: 50%;
+    }
+
+    .sp-newbtn {
+      height: 48px; border-radius: 10px;
+      background: var(--ink); color: var(--bg);
+      border: none;
+      font-family: var(--sans); font-size: 15px; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      transition: background .2s ease, transform .15s ease;
+    }
+    .sp-newbtn .plus { font-size: 20px; line-height: 1; }
+    body.show-s1 .sp-newbtn { animation: btnHl 12s linear forwards; }
+    @keyframes btnHl {
+      0%, 7% { background: var(--ink); transform: scale(1); }
+      8%, 11% { background: var(--accent); transform: scale(.97); }
+      12%, 100% { background: var(--ink); transform: scale(1); }
+    }
+
+    .sp-list {
+      display: flex; flex-direction: column;
+      gap: 10px;
+      margin-top: 4px;
+    }
+    .sp-item {
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px 16px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .sp-item-name { font-size: 14px; font-weight: 600; }
+    .sp-item-preview {
+      font-size: 12.5px; color: var(--ink-2);
+      font-family: var(--mono);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .sp-item-tag {
+      font-size: 11px; color: var(--accent-deep);
+      font-family: var(--mono); letter-spacing: .04em;
+      text-transform: uppercase;
+      align-self: flex-start;
+      margin-top: 4px;
+    }
+    .sp-item.global .sp-item-tag { color: var(--ink-3); }
+
+    /* Newly added template fades in late */
+    .sp-item.new-one {
+      opacity: 0; transform: translateY(-6px);
+      border-color: var(--accent-soft);
+      background: linear-gradient(180deg, #fff, #fff8f4);
+    }
+    body.show-s1 .sp-item.new-one { animation: newItem .6s ease forwards; animation-delay: 10.4s; }
+    @keyframes newItem {
+      from { opacity: 0; transform: translateY(-8px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Editor modal — appears mid-scene */
+    .sp-editor {
+      position: absolute;
+      top: 96px; left: 24px;
+      width: 392px;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 22px 22px 18px;
+      box-shadow: 0 30px 60px -20px rgba(28,26,23,.25),
+                  0 0 0 1px rgba(255,255,255,1) inset;
+      opacity: 0; transform: translateY(6px) scale(.985);
+      transform-origin: 30% 0;
+    }
+    body.show-s1 .sp-editor { animation: editorIn .5s ease forwards; animation-delay: 1.5s; }
+    body.show-s1 .sp-editor.out { animation: editorOut .5s ease forwards; animation-delay: 10s; }
+    @keyframes editorIn {
+      from { opacity: 0; transform: translateY(8px) scale(.985); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes editorOut {
+      from { opacity: 1; transform: translateY(0) scale(1); }
+      to { opacity: 0; transform: translateY(-4px) scale(.99); }
+    }
+
+    .editor-title {
+      font-family: var(--display);
+      font-size: 24px; font-style: italic;
+      margin-bottom: 14px;
+      letter-spacing: -.01em;
+    }
+    .field-label {
+      font-size: 11px;
+      letter-spacing: .12em;
+      color: var(--ink-3);
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+    .field-input, .field-textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 11px 14px;
+      font-family: var(--sans);
+      font-size: 14px;
+      background: var(--bg);
+      color: var(--ink);
+      margin-bottom: 14px;
+      min-height: 44px;
+      position: relative;
+      overflow: hidden;
+    }
+    .field-textarea {
+      min-height: 110px;
+      font-family: var(--mono);
+      font-size: 13.5px;
+      line-height: 1.55;
+      white-space: pre;
+    }
+    .field-input span, .field-textarea span {
+      display: inline-block;
+      clip-path: inset(0 100% 0 0);
+    }
+    body.show-s1 .field-input.f-name span { animation: typeReveal 1.6s steps(12) forwards; animation-delay: 2.6s; }
+    body.show-s1 .field-textarea .ln-1 { animation: typeReveal 1.2s steps(15) forwards; animation-delay: 5.0s; }
+    body.show-s1 .field-textarea .ln-2 { animation: typeReveal 1.2s steps(14) forwards; animation-delay: 6.4s; }
+    body.show-s1 .field-textarea .ln-3 { animation: typeReveal .8s steps(8) forwards; animation-delay: 7.8s; }
+    @keyframes typeReveal {
+      from { clip-path: inset(0 100% 0 0); }
+      to { clip-path: inset(0 0 0 0); }
+    }
+
+    .field-input::after, .field-textarea::after {
+      content: "";
+      position: absolute;
+      width: 2px; height: 18px;
+      background: var(--accent);
+      bottom: 13px; left: 14px;
+      opacity: 0;
+      animation: blink 1s infinite step-end;
+    }
+    body.show-s1 .field-input.f-name.active::after { opacity: 1; }
+    body.show-s1 .field-input.f-name { animation: focusName .01s forwards; animation-delay: 2.3s; }
+    @keyframes focusName { to { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); } }
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+    .field-input.f-name { transition: border-color .3s, box-shadow .3s; }
+
+    .scope-row {
+      display: flex; gap: 8px; margin-bottom: 16px;
+    }
+    .scope-chip {
+      flex: 1;
+      padding: 9px 12px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      border: 1px solid var(--line);
+      color: var(--ink-2);
+      background: var(--bg);
+    }
+    .scope-chip.active {
+      background: var(--ink); color: var(--bg); border-color: var(--ink);
+    }
+
+    .editor-actions {
+      display: flex; justify-content: flex-end; gap: 10px;
+    }
+    .btn-ghost {
+      padding: 10px 16px;
+      border-radius: 9px;
+      font-size: 13px; font-weight: 600;
+      background: transparent; color: var(--ink-2);
+      border: none; cursor: pointer;
+    }
+    .btn-save {
+      padding: 10px 18px;
+      border-radius: 9px;
+      font-size: 13px; font-weight: 600;
+      background: var(--accent); color: white;
+      border: none; cursor: pointer;
+      box-shadow: 0 6px 14px -4px rgba(255,91,46,.45);
+      transition: transform .15s ease;
+    }
+    body.show-s1 .btn-save { animation: saveClick .5s ease forwards; animation-delay: 9.4s; }
+    @keyframes saveClick {
+      0%, 30% { transform: scale(1); background: var(--accent); }
+      45% { transform: scale(.93); background: var(--accent-deep); }
+      100% { transform: scale(1); background: var(--accent); }
+    }
+
+    /* Right-side "page being worked in" — empty document hint */
+    .doc-blank {
+      padding: 70px 90px;
+      display: flex; flex-direction: column;
+      gap: 22px;
+      color: var(--ink-3);
+    }
+    .doc-blank h2 {
+      font-family: var(--display);
+      font-style: italic;
+      font-size: 36px;
+      color: var(--ink);
+      letter-spacing: -.01em;
+    }
+    .doc-blank .skeleton-row {
+      height: 12px; border-radius: 4px;
+      background: var(--bg-deep);
+    }
+    .doc-blank .skeleton-row.r1 { width: 86%; }
+    .doc-blank .skeleton-row.r2 { width: 92%; }
+    .doc-blank .skeleton-row.r3 { width: 68%; }
+    .doc-blank .skeleton-row.r4 { width: 80%; }
+    .doc-blank .skeleton-row.r5 { width: 40%; }
+
+    /* Scene 1 cursor path */
+    body.show-s1 .cursor {
+      animation: c1path 12s ease-in-out forwards;
+    }
+    @keyframes c1path {
+      0%   { transform: translate(800px, 250px); }    /* enter from right area */
+      6%   { transform: translate(280px, 210px); }    /* over Novo template btn */
+      9%, 11% { transform: translate(280px, 218px); }
+      14%  { transform: translate(280px, 218px); }    /* settle */
+      17%  { transform: translate(200px, 280px); }    /* over Name field */
+      21%  { transform: translate(200px, 290px); }    /* click */
+      35%  { transform: translate(200px, 290px); }    /* hold while typing */
+      40%  { transform: translate(220px, 410px); }    /* over Textarea */
+      44%  { transform: translate(220px, 420px); }    /* click */
+      72%  { transform: translate(220px, 420px); }    /* hold while typing multi-line */
+      78%  { transform: translate(360px, 600px); }    /* down to Salvar */
+      82%  { transform: translate(360px, 608px); }    /* click salvar */
+      90%  { transform: translate(360px, 608px); }
+      100% { transform: translate(420px, 720px); }    /* drift away */
+    }
+
+    /* Cursor click flashes scene 1 */
+    body.show-s1 .cursor::before {
+      content: ""; position: absolute;
+      inset: 0; pointer-events: none;
+    }
+    /* Use multiple ::after pseudo via cursor.click classes triggered by JS would be heavy.
+       Instead we layer click pulses via dedicated absolutely-positioned divs.        */
+
+    .click-pulse {
+      position: absolute;
+      width: 22px; height: 22px;
+      border: 2px solid var(--accent);
+      border-radius: 50%;
+      opacity: 0;
+      pointer-events: none;
+      z-index: 59;
+      transform: translate(-50%, -50%) scale(.4);
+    }
+    body.show-s1 .pulse-1a { left: 280px; top: 218px; animation: pulse .55s ease-out forwards; animation-delay: 1.0s; }
+    body.show-s1 .pulse-1b { left: 200px; top: 290px; animation: pulse .55s ease-out forwards; animation-delay: 2.5s; }
+    body.show-s1 .pulse-1c { left: 220px; top: 420px; animation: pulse .55s ease-out forwards; animation-delay: 4.9s; }
+    body.show-s1 .pulse-1d { left: 360px; top: 608px; animation: pulse .55s ease-out forwards; animation-delay: 9.5s; }
+    @keyframes pulse {
+      0% { opacity: 1; transform: translate(-50%, -50%) scale(.4); }
+      100% { opacity: 0; transform: translate(-50%, -50%) scale(2.6); }
+    }
+
+    /* =====================================================
+       SCENE 2 — Email-like compose + right-click + context menu
+       ===================================================== */
+
+    .scene-2 .urlbar-fake {
+      /* not used: chrome is rendered globally */
+    }
+    .scene-2 {
+      padding: 60px 100px 40px;
+      display: flex; flex-direction: column;
+      gap: 18px;
+      background: linear-gradient(180deg, #fff, #fbf8f3);
+    }
+    .mail-app {
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 0;
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 10px 30px -15px rgba(28,26,23,.12);
+    }
+    .mail-side {
+      background: var(--bg);
+      border-right: 1px solid var(--line);
+      padding: 24px 18px;
+      display: flex; flex-direction: column; gap: 8px;
+    }
+    .mail-side h3 {
+      font-family: var(--display);
+      font-style: italic;
+      font-size: 22px;
+      margin-bottom: 12px;
+      color: var(--ink);
+    }
+    .mail-side .folder {
+      font-size: 13px;
+      padding: 8px 10px;
+      border-radius: 7px;
+      color: var(--ink-2);
+      display: flex; align-items: center; gap: 10px;
+    }
+    .mail-side .folder.on { background: var(--accent-soft); color: var(--accent-deep); font-weight: 600; }
+    .mail-side .folder::before {
+      content: ""; width: 8px; height: 8px;
+      border-radius: 2px; background: currentColor; opacity: .55;
+    }
+
+    .compose {
+      padding: 30px 38px;
+      display: flex; flex-direction: column; gap: 14px;
+      position: relative;
+    }
+    .compose-row {
+      display: flex; gap: 16px; align-items: baseline;
+      border-bottom: 1px solid var(--line);
+      padding-bottom: 12px;
+    }
+    .compose-row .lbl {
+      font-size: 12px;
+      letter-spacing: .14em;
+      text-transform: uppercase;
+      color: var(--ink-3);
+      width: 78px;
+      font-weight: 500;
+    }
+    .compose-row .val {
+      font-size: 15px;
+      color: var(--ink);
+      font-family: var(--sans);
+    }
+    .compose-body {
+      margin-top: 6px;
+      min-height: 340px;
+      font-size: 15.5px;
+      color: var(--ink);
+      line-height: 1.6;
+      white-space: pre-wrap;
+      position: relative;
+    }
+    .compose-body .greeting { color: var(--ink); }
+    .compose-body .typed {
+      display: inline-block;
+      clip-path: inset(0 100% 0 0);
+      color: var(--ink);
+    }
+    .compose-body .caret {
+      display: inline-block;
+      width: 2px; height: 22px;
+      background: var(--accent);
+      vertical-align: -3px;
+      margin-left: 1px;
+      animation: blink 1s infinite step-end;
+    }
+
+    /* Scene 2 cursor + clicks */
+    body.show-s2 .cursor {
+      animation: c2path 12s ease-in-out forwards;
+    }
+    @keyframes c2path {
+      0%   { transform: translate(900px, 100px); opacity: 0; }
+      4%   { transform: translate(820px, 260px); opacity: 1; }
+      10%  { transform: translate(820px, 310px); }    /* click into body */
+      20%  { transform: translate(820px, 320px); }    /* right-click */
+      28%  { transform: translate(920px, 470px); }    /* hover InstaType item */
+      40%  { transform: translate(1120px, 470px); }   /* hover into submenu */
+      52%  { transform: translate(1180px, 490px); }   /* hover Assinatura */
+      62%  { transform: translate(1180px, 490px); }   /* click */
+      72%  { transform: translate(820px, 340px); }    /* glide back over text */
+      100% { transform: translate(820px, 360px); }
+    }
+
+    /* Context menu */
+    .ctx {
+      position: absolute;
+      top: 330px; left: 820px;
+      width: 280px;
+      background: rgba(252, 250, 246, .96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(28,26,23,.10);
+      border-radius: 9px;
+      box-shadow:
+        0 22px 50px -18px rgba(28,26,23,.35),
+        0 8px 16px -8px rgba(28,26,23,.18);
+      padding: 6px;
+      font-size: 13px;
+      opacity: 0;
+      transform: translateY(-6px) scale(.97);
+      transform-origin: top left;
+    }
+    body.show-s2 .ctx { animation: ctxIn .15s ease-out forwards; animation-delay: 2.5s; }
+    body.show-s2 .ctx.out { animation: ctxOut .12s ease-out forwards; animation-delay: 8.0s; }
+    @keyframes ctxIn { to { opacity: 1; transform: translateY(0) scale(1); } }
+    @keyframes ctxOut { to { opacity: 0; transform: translateY(-4px) scale(.97); } }
+
+    .ctx-item {
+      padding: 7px 10px;
+      border-radius: 6px;
+      display: flex; justify-content: space-between; align-items: center;
+      color: var(--ink);
+      gap: 12px;
+    }
+    .ctx-item.disabled { color: var(--ink-3); }
+    .ctx-item .kbd { font-family: var(--mono); font-size: 11.5px; color: var(--ink-3); }
+    .ctx-sep { height: 1px; background: rgba(28,26,23,.08); margin: 5px 6px; }
+    .ctx-item.has-sub::after {
+      content: "▸"; color: var(--ink-3); font-size: 14px;
+    }
+    .ctx-item.has-sub {
+      position: relative;
+    }
+    .ctx-item .ico {
+      width: 16px; height: 16px;
+      border-radius: 4px;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      display: inline-grid; place-items: center;
+      color: white;
+      font-family: var(--display); font-size: 11px;
+      font-style: italic;
+      line-height: 1;
+    }
+    .ctx-item .nm { flex: 1; display: flex; align-items: center; gap: 8px; }
+
+    body.show-s2 .ctx-item.has-sub { animation: ctxHover .01s forwards; animation-delay: 4.0s; }
+    @keyframes ctxHover {
+      to { background: var(--accent); color: white; }
+    }
+    body.show-s2 .ctx-item.has-sub.hovered::after { color: white; }
+
+    .ctx-sub {
+      position: absolute;
+      top: -4px; left: calc(100% + 4px);
+      width: 250px;
+      background: rgba(252, 250, 246, .96);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(28,26,23,.10);
+      border-radius: 9px;
+      box-shadow: 0 22px 50px -18px rgba(28,26,23,.35);
+      padding: 6px;
+      opacity: 0;
+      transform: translateX(-4px) scale(.97);
+      transform-origin: top left;
+    }
+    body.show-s2 .ctx-sub { animation: ctxIn .15s ease-out forwards; animation-delay: 4.2s; }
+
+    .ctx-sub-item {
+      padding: 8px 10px;
+      border-radius: 6px;
+      display: flex; flex-direction: column;
+      gap: 2px;
+      cursor: default;
+    }
+    .ctx-sub-item .nm2 { font-size: 13px; font-weight: 500; color: var(--ink); }
+    .ctx-sub-item .pv {
+      font-family: var(--mono); font-size: 11px; color: var(--ink-3);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+      max-width: 220px;
+    }
+    body.show-s2 .ctx-sub-item.target { animation: subHover .01s forwards; animation-delay: 6.0s; }
+    @keyframes subHover {
+      to { background: var(--accent); }
+    }
+    body.show-s2 .ctx-sub-item.target.hl .nm2,
+    body.show-s2 .ctx-sub-item.target.hl .pv {
+      color: white;
+    }
+
+    body.show-s2 .compose-body .typed { animation: typeReveal2 1.6s ease forwards; animation-delay: 8.5s; }
+    @keyframes typeReveal2 {
+      from { clip-path: inset(0 100% 0 0); }
+      to { clip-path: inset(0 0 0 0); }
+    }
+
+    body.show-s2 .compose-body .caret { animation: caretMove 12s linear forwards; }
+    @keyframes caretMove {
+      0%, 11% { opacity: 0; }
+      12%, 70% { opacity: 1; }
+      71%, 100% { opacity: 0; }
+    }
+
+    body.show-s2 .pulse-2a { left: 820px; top: 320px; animation: pulse .55s ease-out forwards; animation-delay: 1.5s; }
+    body.show-s2 .pulse-2b { left: 820px; top: 320px; animation: pulse .55s ease-out forwards; animation-delay: 2.4s; } /* right-click double indicator */
+    body.show-s2 .pulse-2c { left: 1180px; top: 490px; animation: pulse .55s ease-out forwards; animation-delay: 7.6s; }
+
+    /* =====================================================
+       SCENE 3 — Floating picker via Alt+Shift+T
+       ===================================================== */
+    .scene-3 {
+      padding: 60px 100px 40px;
+      display: flex; flex-direction: column; gap: 18px;
+      background: linear-gradient(180deg, #fff, #faf6ef);
+      position: relative;
+    }
+    .chat-app {
+      flex: 1;
+      background: var(--surface);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: 0 10px 30px -15px rgba(28,26,23,.12);
+      display: flex; flex-direction: column;
+    }
+    .chat-header {
+      padding: 22px 30px;
+      border-bottom: 1px solid var(--line);
+      display: flex; align-items: center; gap: 14px;
+    }
+    .chat-header .avatar {
+      width: 42px; height: 42px; border-radius: 50%;
+      background: linear-gradient(135deg, #f0d4c4, #d6a890);
+      display: grid; place-items: center;
+      font-family: var(--display);
+      font-style: italic;
+      color: white; font-size: 20px;
+      line-height: 1;
+    }
+    .chat-header .name {
+      font-weight: 600; font-size: 15px;
+    }
+    .chat-header .status {
+      font-size: 12px; color: var(--ink-3);
+    }
+    .chat-stream {
+      flex: 1;
+      padding: 30px 36px;
+      display: flex; flex-direction: column;
+      gap: 16px;
+    }
+    .bubble {
+      max-width: 64%;
+      padding: 14px 18px;
+      border-radius: 18px;
+      font-size: 15px;
+      line-height: 1.5;
+    }
+    .bubble.them {
+      background: var(--bg);
+      border-bottom-left-radius: 6px;
+      align-self: flex-start;
+      color: var(--ink);
+    }
+    .bubble.them .small {
+      font-size: 11px; color: var(--ink-3); margin-top: 6px; letter-spacing: .04em;
+    }
+
+    .chat-input {
+      margin: 0 30px 26px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 16px 20px;
+      min-height: 80px;
+      background: var(--bg);
+      color: var(--ink);
+      font-size: 15.5px;
+      position: relative;
+      display: flex; flex-direction: column;
+    }
+    .chat-input .placeholder { color: var(--ink-3); }
+    .chat-input .typed3 {
+      display: inline-block;
+      clip-path: inset(0 100% 0 0);
+      color: var(--ink);
+      white-space: pre-wrap;
+    }
+    .chat-input .caret3 {
+      display: inline-block;
+      width: 2px; height: 20px;
+      background: var(--accent);
+      vertical-align: -2px;
+      animation: blink 1s infinite step-end;
+    }
+    body.show-s3 .chat-input { animation: focusInput .3s ease forwards; animation-delay: 1.6s; }
+    @keyframes focusInput {
+      to { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+    }
+
+    /* Kbd hint balloon */
+    .kbd-hint {
+      position: absolute;
+      top: 470px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; gap: 10px; align-items: center;
+      padding: 14px 24px;
+      background: var(--ink);
+      color: var(--bg);
+      border-radius: 14px;
+      box-shadow: 0 22px 40px -18px rgba(0,0,0,.4);
+      opacity: 0;
+    }
+    .kbd-hint .key {
+      font-family: var(--mono);
+      font-size: 16px;
+      padding: 6px 12px;
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.15);
+      border-radius: 7px;
+      letter-spacing: .04em;
+    }
+    .kbd-hint .plus2 {
+      color: var(--accent-2); font-weight: 700;
+    }
+    body.show-s3 .kbd-hint { animation: hintIn 1.2s ease forwards; animation-delay: 2.4s; }
+    @keyframes hintIn {
+      0% { opacity: 0; transform: translateX(-50%) translateY(8px); }
+      18% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      82% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-4px); }
+    }
+
+    /* Floating picker */
+    .picker {
+      position: absolute;
+      top: 280px; left: 50%;
+      transform: translateX(-50%) translateY(8px) scale(.97);
+      width: 520px;
+      background: rgba(255,255,255,.98);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(28,26,23,.10);
+      border-radius: 18px;
+      box-shadow: 0 40px 80px -20px rgba(28,26,23,.35),
+                  0 12px 24px -8px rgba(28,26,23,.18);
+      padding: 14px;
+      opacity: 0;
+      z-index: 5;
+    }
+    body.show-s3 .picker { animation: pickIn .35s cubic-bezier(.34,1.56,.64,1) forwards; animation-delay: 3.8s; }
+    body.show-s3 .picker.out { animation: pickOut .25s ease forwards; animation-delay: 9.6s; }
+    @keyframes pickIn { to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
+    @keyframes pickOut { to { opacity: 0; transform: translateX(-50%) translateY(-4px) scale(.99); } }
+
+    .picker-head {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 4px 8px 14px;
+      border-bottom: 1px solid var(--line);
+      margin-bottom: 8px;
+    }
+    .picker-head .lbl {
+      font-family: var(--display);
+      font-style: italic;
+      font-size: 20px;
+    }
+    .picker-head .hint {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink-3);
+      letter-spacing: .04em;
+    }
+    .picker-row {
+      padding: 12px 14px;
+      border-radius: 10px;
+      display: flex; flex-direction: column; gap: 4px;
+    }
+    .picker-row .name {
+      font-size: 14.5px; font-weight: 600; color: var(--ink);
+    }
+    .picker-row .pv {
+      font-family: var(--mono);
+      font-size: 12px;
+      color: var(--ink-3);
+      white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+    }
+    .picker-row .badge {
+      font-family: var(--mono); font-size: 10.5px;
+      color: var(--accent-deep);
+      letter-spacing: .1em; text-transform: uppercase;
+      margin-top: 2px;
+    }
+    .picker-row.row-1 { background: var(--accent-soft); }
+    body.show-s3 .picker-row.row-1 { animation: hl1 6s ease forwards; animation-delay: 3.8s; }
+    body.show-s3 .picker-row.row-2 { animation: hl2 6s ease forwards; animation-delay: 3.8s; }
+    @keyframes hl1 {
+      0%, 32% { background: var(--accent-soft); }
+      33%, 100% { background: transparent; }
+    }
+    @keyframes hl2 {
+      0%, 32% { background: transparent; }
+      33%, 100% { background: var(--accent-soft); }
+    }
+    .picker-row.row-2 .name,
+    .picker-row.row-1 .name { color: var(--ink); }
+
+    body.show-s3 .cursor {
+      animation: c3path 12s ease-in-out forwards;
+    }
+    @keyframes c3path {
+      0%   { transform: translate(700px, 200px); opacity: 0; }
+      5%   { transform: translate(820px, 720px); opacity: 1; }   /* click input */
+      14%  { transform: translate(820px, 730px); }
+      30%, 60%  { transform: translate(820px, 730px); }            /* hold while picker is shown */
+      75%  { transform: translate(820px, 730px); }
+      100% { transform: translate(720px, 760px); opacity: 1; }
+    }
+
+    body.show-s3 .pulse-3a { left: 820px; top: 730px; animation: pulse .55s ease-out forwards; animation-delay: .8s; }
+
+    body.show-s3 .chat-input .typed3 { animation: typeReveal2 1.0s ease forwards; animation-delay: 9.9s; }
+
+    /* Kbd press indicator for ↓ and Enter */
+    .keypress {
+      position: absolute;
+      bottom: 100px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; gap: 12px; align-items: center;
+      opacity: 0;
+    }
+    .keypress .key {
+      font-family: var(--mono);
+      font-size: 14px;
+      padding: 8px 12px;
+      background: rgba(28,26,23,.92);
+      color: var(--bg);
+      border-radius: 8px;
+      box-shadow: 0 6px 14px -4px rgba(0,0,0,.25);
+    }
+    body.show-s3 .key-down { animation: keyFlash .8s ease forwards; animation-delay: 7.0s; }
+    body.show-s3 .key-enter { animation: keyFlash .8s ease forwards; animation-delay: 8.6s; }
+    @keyframes keyFlash {
+      0% { opacity: 0; transform: translateX(-50%) translateY(6px); }
+      20%, 70% { opacity: 1; transform: translateX(-50%) translateY(0); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-2px); }
+    }
+
+    /* =====================================================
+       OUTRO
+       ===================================================== */
+    .scene-outro {
+      background: var(--bg);
+      display: grid;
+      place-items: center;
+      padding: 60px 100px;
+    }
+    .outro-grid {
+      display: flex; flex-direction: column; align-items: center; gap: 28px;
+      text-align: center;
+    }
+    .outro-logo {
+      width: 132px; height: 132px;
+      border-radius: 30px;
+      background: linear-gradient(135deg, var(--accent-2), var(--accent));
+      display: grid; place-items: center;
+      box-shadow: 0 30px 60px -15px rgba(255,91,46,.35);
+      transform: scale(.85); opacity: 0;
+    }
+    body.show-outro .outro-logo {
+      animation: outroLogo .8s cubic-bezier(.34,1.56,.64,1) forwards;
+    }
+    @keyframes outroLogo {
+      to { transform: scale(1); opacity: 1; }
+    }
+    .outro-logo span {
+      font-family: var(--display);
+      font-style: italic;
+      color: white;
+      font-size: 88px;
+      line-height: 1;
+    }
+    .outro-name {
+      font-family: var(--display);
+      font-style: italic;
+      font-size: 110px;
+      line-height: 1;
+      letter-spacing: -.02em;
+      color: var(--ink);
+      opacity: 0;
+    }
+    .outro-name .accent { color: var(--accent-deep); }
+    body.show-outro .outro-name { animation: outroFade .8s ease .3s forwards; }
+
+    .outro-tag {
+      font-family: var(--sans);
+      font-size: 24px;
+      color: var(--ink-2);
+      max-width: 760px;
+      line-height: 1.45;
+      opacity: 0;
+    }
+    body.show-outro .outro-tag { animation: outroFade .8s ease .6s forwards; }
+
+    .outro-url {
+      font-family: var(--mono);
+      font-size: 22px;
+      color: var(--ink);
+      padding: 14px 28px;
+      border: 1.5px solid var(--ink);
+      border-radius: 999px;
+      letter-spacing: -.01em;
+      opacity: 0;
+    }
+    .outro-url::before {
+      content: "↳ ";
+      color: var(--accent-deep);
+      font-family: var(--sans);
+      font-weight: 700;
+      margin-right: 4px;
+    }
+    body.show-outro .outro-url { animation: outroFade .8s ease .95s forwards; }
+
+    @keyframes outroFade {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ---------- Progress bar (subtle, bottom) ---------- */
+    .prog {
+      position: absolute;
+      bottom: 0; left: 0;
+      height: 3px; width: 100%;
+      background: rgba(28,26,23,.05);
+    }
+    .prog::after {
+      content: ""; position: absolute;
+      left: 0; top: 0; bottom: 0;
+      background: var(--accent);
+      animation: prog 44s linear infinite;
+    }
+    @keyframes prog { from { width: 0; } to { width: 100%; } }
+
+    /* ---------- Recording aid: tiny corner watermark ---------- */
+    .markers {
+      position: absolute;
+      top: 14px; right: 18px;
+      font-family: var(--mono);
+      font-size: 10px;
+      color: rgba(28,26,23,.35);
+      letter-spacing: .15em;
+      text-transform: uppercase;
+      z-index: 100;
+    }
+  </style>
+</head>
+<body class="show-s1">
+  <div class="stage-wrap">
+    <div class="stage" id="stage">
+      <div class="markers">1920×1080 · loop · demo</div>
+
+      <!-- Browser frame -->
+      <div class="browser">
+        <div class="chrome">
+          <div class="traffic"><span></span><span></span><span></span></div>
+          <div class="urlbar"><span>mail.example.com / compose</span></div>
+          <div style="width:48px;"></div>
+        </div>
+        <div class="viewport">
+
+          <!-- =========== SCENE 1 =========== -->
+          <section class="scene scene-1">
+            <aside class="sp">
+              <div class="sp-header">
+                <div class="sp-logo">I</div>
+                <div>
+                  <div class="sp-title">InstaType</div>
+                  <div class="sp-sub">3 templates · mail.example.com</div>
+                </div>
+              </div>
+              <div class="sp-search">Buscar template…</div>
+              <button class="sp-newbtn"><span class="plus">+</span> Novo template</button>
+              <div class="sp-list">
+                <div class="sp-item new-one">
+                  <div class="sp-item-name">Assinatura</div>
+                  <div class="sp-item-preview">Atenciosamente, Eduardo Penna…</div>
+                  <div class="sp-item-tag">Global</div>
+                </div>
+                <div class="sp-item global">
+                  <div class="sp-item-name">Saudação cordial</div>
+                  <div class="sp-item-preview">Olá, tudo bem? Espero que…</div>
+                  <div class="sp-item-tag">Global</div>
+                </div>
+                <div class="sp-item">
+                  <div class="sp-item-name">Resposta automática</div>
+                  <div class="sp-item-preview">Obrigado pela mensagem. Vou…</div>
+                  <div class="sp-item-tag">mail.example.com</div>
+                </div>
+              </div>
+            </aside>
+
+            <div class="doc-blank">
+              <h2>Nova mensagem</h2>
+              <div class="skeleton-row r1"></div>
+              <div class="skeleton-row r2"></div>
+              <div class="skeleton-row r3"></div>
+              <div class="skeleton-row r4"></div>
+              <div class="skeleton-row r5"></div>
+            </div>
+
+            <!-- Editor floating panel -->
+            <div class="sp-editor">
+              <div class="editor-title">Novo template</div>
+              <div class="field-label">Nome</div>
+              <div class="field-input f-name active"><span>Assinatura</span></div>
+              <div class="field-label">Conteúdo</div>
+              <div class="field-textarea"><span class="ln-1">Atenciosamente,
+</span><span class="ln-2">Eduardo Penna
+</span><span class="ln-3">NaRadio</span></div>
+              <div class="field-label">Escopo</div>
+              <div class="scope-row">
+                <div class="scope-chip active">Global</div>
+                <div class="scope-chip">Este site</div>
+              </div>
+              <div class="editor-actions">
+                <button class="btn-ghost">Cancelar</button>
+                <button class="btn-save">Salvar</button>
+              </div>
+            </div>
+
+            <div class="click-pulse pulse-1a"></div>
+            <div class="click-pulse pulse-1b"></div>
+            <div class="click-pulse pulse-1c"></div>
+            <div class="click-pulse pulse-1d"></div>
+          </section>
+
+          <!-- =========== SCENE 2 =========== -->
+          <section class="scene scene-2">
+            <div class="mail-app">
+              <aside class="mail-side">
+                <h3>Caixa</h3>
+                <div class="folder on">Rascunhos</div>
+                <div class="folder">Enviados</div>
+                <div class="folder">Importantes</div>
+                <div class="folder">Spam</div>
+              </aside>
+              <div class="compose">
+                <div class="compose-row"><span class="lbl">Para</span><span class="val">cliente@parceiro.com</span></div>
+                <div class="compose-row"><span class="lbl">Assunto</span><span class="val">Proposta de Q3 — revisão</span></div>
+                <div class="compose-body">
+<span class="greeting">Olá, segue minha proposta atualizada.
+
+Fico à disposição para alinharmos detalhes.
+
+</span><span class="typed">Atenciosamente,
+Eduardo Penna
+NaRadio</span><span class="caret"></span>
+                </div>
+
+                <!-- Context menu -->
+                <div class="ctx">
+                  <div class="ctx-item disabled"><span class="nm">Voltar</span><span class="kbd">⌘Z</span></div>
+                  <div class="ctx-sep"></div>
+                  <div class="ctx-item"><span class="nm">Recortar</span><span class="kbd">⌘X</span></div>
+                  <div class="ctx-item"><span class="nm">Copiar</span><span class="kbd">⌘C</span></div>
+                  <div class="ctx-item"><span class="nm">Colar</span><span class="kbd">⌘V</span></div>
+                  <div class="ctx-sep"></div>
+                  <div class="ctx-item has-sub hovered">
+                    <span class="nm"><span class="ico">I</span>InstaType</span>
+                    <!-- submenu -->
+                    <div class="ctx-sub">
+                      <div class="ctx-sub-item target hl">
+                        <div class="nm2">Assinatura</div>
+                        <div class="pv">Atenciosamente, Eduardo Penna…</div>
+                      </div>
+                      <div class="ctx-sub-item">
+                        <div class="nm2">Saudação cordial</div>
+                        <div class="pv">Olá, tudo bem? Espero que…</div>
+                      </div>
+                      <div class="ctx-sub-item">
+                        <div class="nm2">Resposta automática</div>
+                        <div class="pv">Obrigado pela mensagem. Vou…</div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="ctx-sep"></div>
+                  <div class="ctx-item"><span class="nm">Verificar ortografia</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="click-pulse pulse-2a"></div>
+            <div class="click-pulse pulse-2b"></div>
+            <div class="click-pulse pulse-2c"></div>
+          </section>
+
+          <!-- =========== SCENE 3 =========== -->
+          <section class="scene scene-3">
+            <div class="chat-app">
+              <div class="chat-header">
+                <div class="avatar">M</div>
+                <div>
+                  <div class="name">Mariana Costa</div>
+                  <div class="status">online · agora</div>
+                </div>
+              </div>
+              <div class="chat-stream">
+                <div class="bubble them">
+                  Eduardo, consegue me mandar os dados pra eu fechar o contrato?
+                  <div class="small">14:32</div>
+                </div>
+                <div class="bubble them">
+                  Pode ser ainda hoje?
+                  <div class="small">14:33</div>
+                </div>
+              </div>
+              <div class="chat-input">
+                <span class="placeholder" id="ph3">Escreva uma mensagem</span><span class="typed3">Atenciosamente,
+Eduardo Penna
+NaRadio</span><span class="caret3"></span>
+              </div>
+            </div>
+
+            <div class="kbd-hint">
+              <span class="key">Alt</span>
+              <span class="plus2">+</span>
+              <span class="key">Shift</span>
+              <span class="plus2">+</span>
+              <span class="key">T</span>
+            </div>
+
+            <div class="picker">
+              <div class="picker-head">
+                <span class="lbl">Inserir template</span>
+                <span class="hint">↑↓ navegar · ↵ inserir · esc fechar</span>
+              </div>
+              <div class="picker-row row-1">
+                <div class="name">Saudação cordial</div>
+                <div class="pv">Olá, tudo bem? Espero que esta mensagem te encontre…</div>
+                <div class="badge">Global</div>
+              </div>
+              <div class="picker-row row-2">
+                <div class="name">Assinatura</div>
+                <div class="pv">Atenciosamente, Eduardo Penna, NaRadio</div>
+                <div class="badge">Global</div>
+              </div>
+              <div class="picker-row">
+                <div class="name">Resposta automática</div>
+                <div class="pv">Obrigado pela mensagem. Vou retornar em breve…</div>
+                <div class="badge">mail.example.com</div>
+              </div>
+            </div>
+
+            <div class="keypress key-down"><span class="key">↓</span></div>
+            <div class="keypress key-enter"><span class="key">↵  Enter</span></div>
+
+            <div class="click-pulse pulse-3a"></div>
+          </section>
+
+          <!-- =========== OUTRO =========== -->
+          <section class="scene scene-outro">
+            <div class="outro-grid">
+              <div class="outro-logo"><span>I</span></div>
+              <div class="outro-name">Insta<span class="accent">Type</span></div>
+              <p class="outro-tag">Salve trechos de texto e cole em qualquer campo da web — com um clique direito, no Side Panel ou pelo atalho de teclado.</p>
+              <div class="outro-url">instatype.s3web.com.br</div>
+            </div>
+          </section>
+
+        </div>
+      </div>
+
+      <!-- Captions -->
+      <div class="caption-wrap">
+        <div class="caption cap-1"><span class="num">01</span>Salve um trecho de texto.</div>
+        <div class="caption cap-2" style="position:absolute"><span class="num">02</span>Cole em qualquer campo da web.</div>
+        <div class="caption cap-3" style="position:absolute"><span class="num">03</span>Ou use o atalho de teclado.</div>
+        <div class="caption cap-outro" style="position:absolute; opacity:0"></div>
+      </div>
+
+      <!-- Simulated cursor -->
+      <div class="cursor">
+        <svg viewBox="0 0 28 32" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2 1 L2 24 L8.5 19 L12.5 28 L16.5 26.2 L12.5 17 L21 17 Z"
+                fill="#1c1a17" stroke="#ffffff" stroke-width="1.4" stroke-linejoin="round"/>
+        </svg>
+      </div>
+
+      <div class="prog"></div>
+    </div>
+  </div>
+
+  <script>
+    // --- scene orchestration ---
+    const seq = [
+      { cls: 'show-s1', dur: 12000 },
+      { cls: 'show-s2', dur: 12000 },
+      { cls: 'show-s3', dur: 12000 },
+      { cls: 'show-outro', dur: 4500 },
+    ];
+    const body = document.body;
+    let idx = 0;
+
+    function applyScene() {
+      seq.forEach(s => body.classList.remove(s.cls));
+      // Force reflow so re-adding a class restarts CSS animations
+      void body.offsetWidth;
+      body.classList.add(seq[idx].cls);
+      setTimeout(() => {
+        idx = (idx + 1) % seq.length;
+        applyScene();
+      }, seq[idx].dur);
+    }
+    // initial paint shows scene 1 (body has class show-s1 in HTML), then start loop after its duration
+    setTimeout(() => {
+      idx = 1;
+      applyScene();
+    }, seq[0].dur);
+
+    // --- responsive scaling: keep 1920x1080 stage fit-to-viewport ---
+    function fit() {
+      const stage = document.getElementById('stage');
+      const s = Math.min(window.innerWidth / 1920, window.innerHeight / 1080);
+      stage.style.transform = `scale(${s})`;
+    }
+    window.addEventListener('resize', fit);
+    fit();
+  </script>
+</body>
+</html>

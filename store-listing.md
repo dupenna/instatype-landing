@@ -9,6 +9,8 @@ Conteúdo pronto para colar nos campos do cadastro.
 | Campo | Valor |
 |---|---|
 | **Nome da extensão** | `InstaType — Text Snippets` |
+| **URL da loja** | https://chromewebstore.google.com/detail/innkhhcmaehlehedknljdfcbafobedee |
+| **ID da extensão** | `innkhhcmaehlehedknljdfcbafobedee` |
 | **Categoria primária** | Produtividade / Productivity |
 | **Categoria secundária** | Ferramentas / Tools |
 | **Idiomas suportados** | Português (Brasil), English (US), Español |
