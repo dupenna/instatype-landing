@@ -142,6 +142,10 @@
       font-size: 10px; font-weight: 700;
     }
     .btn:hover .badge { background: white; color: var(--accent-deep); }
+    /* Force CTA contrast inside .nav-links (whose default `a` color is gray
+       and would otherwise win specificity over .btn). */
+    .nav-links a.btn,
+    .nav-links a.btn:hover { color: var(--bg); }
 
     /* ============ HERO ============ */
     .hero {
@@ -684,7 +688,7 @@ Product designer · Studio Atlas</div>
       <div>
         <div class="hk-eyebrow">atalho</div>
         <div class="hk-keys">
-          <kbd>⌥</kbd><kbd>⇧</kbd><kbd>T</kbd>
+          <kbd class="k-alt">⌥</kbd><kbd class="k-shift">⇧</kbd><kbd>T</kbd>
         </div>
       </div>
     </div>
@@ -709,7 +713,7 @@ Product designer · Studio Atlas</div>
       </div>
       <h3>Atalho de teclado</h3>
       <p>Pressione a combinação em qualquer campo focado e um seletor flutuante aparece para busca rápida com ↑↓ e Enter.</p>
-      <div class="feat-kbd"><kbd>⌥</kbd><kbd>⇧</kbd><kbd>T</kbd></div>
+      <div class="feat-kbd"><kbd class="k-alt">⌥</kbd><kbd class="k-shift">⇧</kbd><kbd>T</kbd></div>
     </div>
     <div class="feature">
       <div class="feature-icon">
@@ -756,7 +760,7 @@ Product designer · Studio Atlas</div>
     <div class="step">
       <div class="step-num">02</div>
       <h3>Atalho de teclado</h3>
-      <p>Pressione <kbd>⌥</kbd> <kbd>⇧</kbd> <kbd>T</kbd> em qualquer campo focado. Um seletor flutuante aparece com busca, ↑↓ e Enter para escolher.</p>
+      <p>Pressione <kbd class="k-alt">⌥</kbd> <kbd class="k-shift">⇧</kbd> <kbd>T</kbd> em qualquer campo focado. Um seletor flutuante aparece com busca, ↑↓ e Enter para escolher.</p>
     </div>
     <div class="step">
       <div class="step-num">03</div>
@@ -846,6 +850,20 @@ Product designer · Studio Atlas</div>
     <a href="#top">Topo</a>
   </div>
 </footer>
+
+<script>
+  // OS-aware keyboard shortcut labels.
+  // Default markup uses Mac glyphs (⌥ ⇧) since Mac users skew higher on
+  // creative/dev personas; on Windows/Linux we swap to "Alt" / "Shift".
+  (function () {
+    var ua = navigator.userAgentData;
+    var platform = (ua && ua.platform) || navigator.platform || navigator.userAgent || '';
+    var isMac = /Mac|iPhone|iPad|iPod/i.test(platform);
+    if (isMac) return;
+    document.querySelectorAll('kbd.k-alt').forEach(function (el) { el.textContent = 'Alt'; });
+    document.querySelectorAll('kbd.k-shift').forEach(function (el) { el.textContent = 'Shift'; });
+  })();
+</script>
 
 </body>
 </html>
