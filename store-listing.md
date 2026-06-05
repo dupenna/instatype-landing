@@ -55,13 +55,13 @@ keyboard shortcut.
 Mark a snippet as Global to make it available everywhere, or scope it
 to a single domain. The right-click menu auto-filters to show only
 what's relevant for the page you're on — your work signatures don't
-clutter your personal email, your code snippets stay on GitHub.
+clutter your personal email, and dev snippets stay where you write code.
 
 ━━━ Works in any input ━━━
 
 • Plain inputs and textareas (forms, search boxes)
-• Rich-text editors (Gmail, Notion, Linear, Slack, Discord, Lexical
-  and ProseMirror-based apps including WhatsApp Web)
+• Rich-text editors built on the major web frameworks (Lexical,
+  ProseMirror, Slate, Draft.js, Quill)
 • Multi-line snippets keep their line breaks intact
 
 ━━━ Private by design ━━━
@@ -117,13 +117,13 @@ lugar da web em dois cliques — ou com um único atalho de teclado.
 Marque um template como Global para usá-lo em qualquer site, ou
 restrinja a um domínio específico. O menu de contexto filtra
 automaticamente o que aparece — sua assinatura do trabalho não
-polui o e-mail pessoal, seus snippets de código ficam só no GitHub.
+polui o e-mail pessoal, e os snippets de código ficam onde você programa.
 
 ━━━ Funciona em qualquer campo ━━━
 
 • Inputs e textareas comuns (formulários, buscas)
-• Editores rich-text (Gmail, Notion, Linear, Slack, Discord, apps
-  baseados em Lexical e ProseMirror, incluindo WhatsApp Web)
+• Editores rich-text baseados nos principais frameworks da web
+  (Lexical, ProseMirror, Slate, Draft.js, Quill)
 • Templates multi-linha mantêm as quebras de linha intactas
 
 ━━━ Privado por design ━━━
@@ -181,14 +181,14 @@ en dos clics — o con un único atajo de teclado.
 Marca una plantilla como Global para usarla en cualquier sitio, o
 restríngela a un dominio específico. El menú contextual filtra
 automáticamente lo que aparece — tu firma del trabajo no
-contamina el correo personal, tus fragmentos de código se quedan
-solo en GitHub.
+contamina el correo personal, y los fragmentos de código se quedan
+donde escribes código.
 
 ━━━ Funciona en cualquier campo ━━━
 
 • Inputs y textareas comunes (formularios, búsquedas)
-• Editores rich-text (Gmail, Notion, Linear, Slack, Discord, apps
-  basadas en Lexical y ProseMirror, incluyendo WhatsApp Web)
+• Editores rich-text basados en los principales frameworks de la web
+  (Lexical, ProseMirror, Slate, Draft.js, Quill)
 • Las plantillas multilínea conservan los saltos de línea intactos
 
 ━━━ Privado por diseño ━━━
