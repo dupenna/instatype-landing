@@ -176,7 +176,10 @@
     .cursor {
       position: absolute;
       width: 28px; height: 32px;
-      left: -40px; top: -40px;
+      /* SVG tip sits at (2,1) inside the 28×32 viewBox. Offsetting the
+         element by (-2, -1) means translate(x, y) puts the *tip* at (x, y),
+         which is the same coordinate system the click pulses use. */
+      left: -2px; top: -1px;
       transform: translate(0,0);
       transition: transform .9s cubic-bezier(.4,.0,.2,1), opacity .35s ease;
       pointer-events: none;
@@ -205,11 +208,13 @@
     /* =====================================================
        SCENE 1 — Side Panel + Save new template
        ===================================================== */
-    .scene-1 { display: grid; grid-template-columns: 440px 1fr; }
+    /* Side Panel sits on the RIGHT — matches the real Chrome Side Panel
+       default position. Doc content fills the left, panel pinned right. */
+    .scene-1 { display: grid; grid-template-columns: 1fr 440px; }
 
     .sp {
       background: var(--bg);
-      border-right: 1px solid var(--line);
+      border-left: 1px solid var(--line);
       padding: 28px 24px;
       display: flex; flex-direction: column;
       gap: 18px;
@@ -217,13 +222,10 @@
     .sp-header { display: flex; align-items: center; gap: 12px; }
     .sp-logo {
       width: 38px; height: 38px; border-radius: 10px;
-      background: linear-gradient(135deg, var(--accent-2), var(--accent));
-      display: grid; place-items: center;
-      color: white;
-      font-family: var(--display);
-      font-size: 24px; line-height: 1;
+      overflow: hidden;
       box-shadow: 0 6px 14px -4px rgba(255,91,46,.45);
     }
+    .sp-logo img { width: 100%; height: 100%; display: block; }
     .sp-title { font-size: 22px; font-weight: 700; letter-spacing: -.01em; }
     .sp-sub { font-size: 13px; color: var(--ink-2); }
 
@@ -301,7 +303,7 @@
     /* Editor modal — appears mid-scene */
     .sp-editor {
       position: absolute;
-      top: 96px; left: 24px;
+      top: 96px; right: 24px; left: auto;
       width: 392px;
       background: var(--surface);
       border: 1px solid var(--line);
@@ -312,15 +314,18 @@
       opacity: 0; transform: translateY(6px) scale(.985);
       transform-origin: 30% 0;
     }
-    body.show-s1 .sp-editor { animation: editorIn .5s ease forwards; animation-delay: 1.5s; }
-    body.show-s1 .sp-editor.out { animation: editorOut .5s ease forwards; animation-delay: 10s; }
-    @keyframes editorIn {
-      from { opacity: 0; transform: translateY(8px) scale(.985); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
+    /* Editor lifecycle — single keyframes orchestrates open, hold, close
+       so it actually CLOSES after Salvar is clicked (no class toggling). */
+    body.show-s1 .sp-editor {
+      animation: editorLife 10.5s ease forwards;
+      animation-delay: 1.5s;
     }
-    @keyframes editorOut {
-      from { opacity: 1; transform: translateY(0) scale(1); }
-      to { opacity: 0; transform: translateY(-4px) scale(.99); }
+    @keyframes editorLife {
+      0%   { opacity: 0; transform: translateY(8px) scale(.985); }
+      5%   { opacity: 1; transform: translateY(0) scale(1); }
+      79%  { opacity: 1; transform: translateY(0) scale(1); }     /* hold through Salvar click (9.8s scene time) */
+      85%  { opacity: 0; transform: translateY(-4px) scale(.99); } /* gone by 10.4s, exactly when new-one item appears */
+      100% { opacity: 0; }
     }
 
     .editor-title {
@@ -362,6 +367,11 @@
       display: inline-block;
       clip-path: inset(0 100% 0 0);
     }
+    /* Textarea line spans must be blocks so each one is its own visible
+       line — inline-block + literal \n collapses everything onto one row. */
+    .field-textarea .ln-1,
+    .field-textarea .ln-2,
+    .field-textarea .ln-3 { display: block; }
     body.show-s1 .field-input.f-name span { animation: typeReveal 1.6s steps(12) forwards; animation-delay: 2.6s; }
     body.show-s1 .field-textarea .ln-1 { animation: typeReveal 1.2s steps(15) forwards; animation-delay: 5.0s; }
     body.show-s1 .field-textarea .ln-2 { animation: typeReveal 1.2s steps(14) forwards; animation-delay: 6.4s; }
@@ -378,11 +388,36 @@
       background: var(--accent);
       bottom: 13px; left: 14px;
       opacity: 0;
-      animation: blink 1s infinite step-end;
+      /* No unconditional animation: a per-field animation below activates
+         each caret only inside its own typing window so we never have two
+         carets blinking at once. */
     }
-    body.show-s1 .field-input.f-name.active::after { opacity: 1; }
-    body.show-s1 .field-input.f-name { animation: focusName .01s forwards; animation-delay: 2.3s; }
-    @keyframes focusName { to { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); } }
+    /* Name field caret: blinks for ~3s while the name is being typed. */
+    body.show-s1 .field-input.f-name::after {
+      animation: blink 1s step-end 3 forwards;
+      animation-delay: 2.3s;
+    }
+    /* Textarea caret intentionally NOT animated — the coral focus ring on
+       the textarea already signals "this field is active", and a single
+       caret can't honestly track multi-line typing without per-line
+       repositioning (was rendering stuck at bottom-left). */
+    /* Focus moves from Name → Textarea like a real user would. The Name
+       field gets the coral focus ring at 2.3s while typing, then drops
+       focus at 5.0s when the cursor jumps to the textarea. */
+    body.show-s1 .field-input.f-name {
+      animation: nameFocus 12s linear forwards;
+    }
+    @keyframes nameFocus {
+      0%, 18% { border-color: var(--line); box-shadow: 0 0 0 0 transparent; }
+      19%, 41% { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+      42%, 100% { border-color: var(--line); box-shadow: 0 0 0 0 transparent; }
+    }
+    body.show-s1 .field-textarea {
+      animation: focusTextarea .01s forwards;
+      animation-delay: 5.0s;
+      position: relative;
+    }
+    @keyframes focusTextarea { to { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); } }
     @keyframes blink {
       0%, 49% { opacity: 1; }
       50%, 100% { opacity: 0; }
@@ -461,21 +496,28 @@
     body.show-s1 .cursor {
       animation: c1path 12s ease-in-out forwards;
     }
+    /* Cursor path — viewport coordinates (1700×842). After each field click
+       the cursor steps to the right of the editor so the typed text isn't
+       obscured by the cursor while it reveals. Novo template button is at
+       viewport-y ~168 (panel padding 28 + sp-header 40 + gap 18 + search 40
+       + gap 18 = 144–192, center 168). */
     @keyframes c1path {
-      0%   { transform: translate(800px, 250px); }    /* enter from right area */
-      6%   { transform: translate(280px, 210px); }    /* over Novo template btn */
-      9%, 11% { transform: translate(280px, 218px); }
-      14%  { transform: translate(280px, 218px); }    /* settle */
-      17%  { transform: translate(200px, 280px); }    /* over Name field */
-      21%  { transform: translate(200px, 290px); }    /* click */
-      35%  { transform: translate(200px, 290px); }    /* hold while typing */
-      40%  { transform: translate(220px, 410px); }    /* over Textarea */
-      44%  { transform: translate(220px, 420px); }    /* click */
-      72%  { transform: translate(220px, 420px); }    /* hold while typing multi-line */
-      78%  { transform: translate(360px, 600px); }    /* down to Salvar */
-      82%  { transform: translate(360px, 608px); }    /* click salvar */
-      90%  { transform: translate(360px, 608px); }
-      100% { transform: translate(420px, 720px); }    /* drift away */
+      0%   { transform: translate(900px, 250px); }    /* enter from middle */
+      6%   { transform: translate(1480px, 165px); }   /* over Novo template btn */
+      9%, 11% { transform: translate(1480px, 168px); }/* click */
+      14%  { transform: translate(1480px, 168px); }   /* settle */
+      17%  { transform: translate(1334px, 195px); }   /* over Name field */
+      21%  { transform: translate(1334px, 202px); }   /* click name */
+      25%  { transform: translate(1620px, 240px); }   /* drift right so typing is visible */
+      35%  { transform: translate(1620px, 240px); }   /* hold */
+      40%  { transform: translate(1334px, 305px); }   /* over Textarea */
+      44%  { transform: translate(1334px, 311px); }   /* click textarea */
+      50%  { transform: translate(1620px, 380px); }   /* drift right while text appears */
+      72%  { transform: translate(1620px, 380px); }   /* hold */
+      78%  { transform: translate(1614px, 465px); }   /* down to Salvar */
+      82%  { transform: translate(1614px, 470px); }   /* click salvar */
+      90%  { transform: translate(1614px, 470px); }
+      100% { transform: translate(1500px, 620px); }   /* drift away */
     }
 
     /* Cursor click flashes scene 1 */
@@ -496,10 +538,10 @@
       z-index: 59;
       transform: translate(-50%, -50%) scale(.4);
     }
-    body.show-s1 .pulse-1a { left: 280px; top: 218px; animation: pulse .55s ease-out forwards; animation-delay: 1.0s; }
-    body.show-s1 .pulse-1b { left: 200px; top: 290px; animation: pulse .55s ease-out forwards; animation-delay: 2.5s; }
-    body.show-s1 .pulse-1c { left: 220px; top: 420px; animation: pulse .55s ease-out forwards; animation-delay: 4.9s; }
-    body.show-s1 .pulse-1d { left: 360px; top: 608px; animation: pulse .55s ease-out forwards; animation-delay: 9.5s; }
+    body.show-s1 .pulse-1a { left: 1480px; top: 168px; animation: pulse .55s ease-out forwards; animation-delay: 1.0s; }
+    body.show-s1 .pulse-1b { left: 1334px; top: 202px; animation: pulse .55s ease-out forwards; animation-delay: 2.5s; }
+    body.show-s1 .pulse-1c { left: 1334px; top: 311px; animation: pulse .55s ease-out forwards; animation-delay: 4.9s; }
+    body.show-s1 .pulse-1d { left: 1614px; top: 470px; animation: pulse .55s ease-out forwards; animation-delay: 9.5s; }
     @keyframes pulse {
       0% { opacity: 1; transform: translate(-50%, -50%) scale(.4); }
       100% { opacity: 0; transform: translate(-50%, -50%) scale(2.6); }
@@ -590,39 +632,44 @@
     .compose-body .greeting { color: var(--ink); }
     .compose-body .typed {
       display: inline-block;
+      vertical-align: top;
       clip-path: inset(0 100% 0 0);
       color: var(--ink);
     }
     .compose-body .caret {
       display: inline-block;
+      vertical-align: top;
       width: 2px; height: 22px;
       background: var(--accent);
-      vertical-align: -3px;
-      margin-left: 1px;
+      margin: 4px 1px 0 0;
       animation: blink 1s infinite step-end;
     }
 
-    /* Scene 2 cursor + clicks */
+    /* Scene 2 cursor + clicks — viewport coordinates. Body click lands
+       at (520, 320); ctx menu opens at the same point; cursor walks
+       through Voltar → InstaType → submenu → Assinatura. */
     body.show-s2 .cursor {
       animation: c2path 12s ease-in-out forwards;
     }
     @keyframes c2path {
       0%   { transform: translate(900px, 100px); opacity: 0; }
-      4%   { transform: translate(820px, 260px); opacity: 1; }
-      10%  { transform: translate(820px, 310px); }    /* click into body */
-      20%  { transform: translate(820px, 320px); }    /* right-click */
-      28%  { transform: translate(920px, 470px); }    /* hover InstaType item */
-      40%  { transform: translate(1120px, 470px); }   /* hover into submenu */
-      52%  { transform: translate(1180px, 490px); }   /* hover Assinatura */
-      62%  { transform: translate(1180px, 490px); }   /* click */
-      72%  { transform: translate(820px, 340px); }    /* glide back over text */
-      100% { transform: translate(820px, 360px); }
+      4%   { transform: translate(540px, 290px); opacity: 1; }   /* approach body */
+      10%  { transform: translate(520px, 320px); }     /* left-click body */
+      18%  { transform: translate(520px, 320px); }     /* hold */
+      20%  { transform: translate(520px, 320px); }     /* right-click pulse */
+      28%  { transform: translate(560px, 492px); }     /* hover InstaType item */
+      40%  { transform: translate(820px, 495px); }     /* enter submenu */
+      52%  { transform: translate(880px, 499px); }     /* hover Assinatura */
+      62%  { transform: translate(880px, 499px); }     /* click */
+      72%  { transform: translate(520px, 340px); }     /* back over body */
+      100% { transform: translate(520px, 360px); }
     }
 
-    /* Context menu */
+    /* Context menu — positioned in viewport coordinates so it surfaces
+       exactly at the cursor's right-click point. */
     .ctx {
       position: absolute;
-      top: 330px; left: 820px;
+      top: 320px; left: 520px;
       width: 280px;
       background: rgba(252, 250, 246, .96);
       backdrop-filter: blur(20px);
@@ -638,10 +685,18 @@
       transform: translateY(-6px) scale(.97);
       transform-origin: top left;
     }
-    body.show-s2 .ctx { animation: ctxIn .15s ease-out forwards; animation-delay: 2.5s; }
-    body.show-s2 .ctx.out { animation: ctxOut .12s ease-out forwards; animation-delay: 8.0s; }
-    @keyframes ctxIn { to { opacity: 1; transform: translateY(0) scale(1); } }
-    @keyframes ctxOut { to { opacity: 0; transform: translateY(-4px) scale(.97); } }
+    /* Context menu lifecycle — appears at right-click (2.5s) and closes
+       right after Assinatura is clicked (~7.7s). */
+    body.show-s2 .ctx {
+      animation: ctxLife 5.4s ease forwards;
+      animation-delay: 2.5s;
+    }
+    @keyframes ctxLife {
+      0%   { opacity: 0; transform: translateY(-6px) scale(.97); }
+      3%   { opacity: 1; transform: translateY(0) scale(1); }
+      94%  { opacity: 1; transform: translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateY(-4px) scale(.97); }
+    }
 
     .ctx-item {
       padding: 7px 10px;
@@ -662,20 +717,27 @@
     .ctx-item .ico {
       width: 16px; height: 16px;
       border-radius: 4px;
-      background: linear-gradient(135deg, var(--accent-2), var(--accent));
-      display: inline-grid; place-items: center;
-      color: white;
-      font-family: var(--display); font-size: 11px;
-      font-style: italic;
-      line-height: 1;
+      overflow: hidden;
+      display: inline-block;
     }
+    .ctx-item .ico img { width: 100%; height: 100%; display: block; }
     .ctx-item .nm { flex: 1; display: flex; align-items: center; gap: 8px; }
 
     body.show-s2 .ctx-item.has-sub { animation: ctxHover .01s forwards; animation-delay: 4.0s; }
     @keyframes ctxHover {
       to { background: var(--accent); color: white; }
     }
-    body.show-s2 .ctx-item.has-sub.hovered::after { color: white; }
+    /* Arrow color follows the same timing as the parent's coral-fill
+       animation so it stays visible at every phase (gray on cream before
+       4s, white on coral after). The .hovered class is removed from the
+       HTML — was making the arrow white-on-white from frame zero. */
+    body.show-s2 .ctx-item.has-sub::after {
+      animation: arrowColor 12s linear forwards;
+    }
+    @keyframes arrowColor {
+      0%, 32% { color: var(--ink-3); }
+      34%, 100% { color: white; }
+    }
 
     .ctx-sub {
       position: absolute;
@@ -692,7 +754,18 @@
       transform: translateX(-4px) scale(.97);
       transform-origin: top left;
     }
-    body.show-s2 .ctx-sub { animation: ctxIn .15s ease-out forwards; animation-delay: 4.2s; }
+    /* Submenu lifecycle — opens when cursor hovers InstaType (~4.2s) and
+       closes together with the parent menu after Assinatura click. */
+    body.show-s2 .ctx-sub {
+      animation: ctxSubLife 3.5s ease forwards;
+      animation-delay: 4.2s;
+    }
+    @keyframes ctxSubLife {
+      0%   { opacity: 0; transform: translateX(-4px) scale(.97); }
+      8%   { opacity: 1; transform: translateX(0) scale(1); }
+      92%  { opacity: 1; transform: translateX(0) scale(1); }
+      100% { opacity: 0; transform: translateX(-4px) scale(.97); }
+    }
 
     .ctx-sub-item {
       padding: 8px 10px;
@@ -707,14 +780,22 @@
       white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
       max-width: 220px;
     }
-    body.show-s2 .ctx-sub-item.target { animation: subHover .01s forwards; animation-delay: 6.0s; }
-    @keyframes subHover {
-      to { background: var(--accent); }
+    /* Assinatura selection — coral background + white text fire together
+       at 6s (the moment the cursor lands on it). The .hl class on the
+       initial HTML was forcing white text from frame 0 (invisible on the
+       white submenu), so the item looked missing until 6s. */
+    body.show-s2 .ctx-sub-item.target {
+      animation: subBg .01s 6.0s forwards;
     }
-    body.show-s2 .ctx-sub-item.target.hl .nm2,
-    body.show-s2 .ctx-sub-item.target.hl .pv {
-      color: white;
+    @keyframes subBg { to { background: var(--accent); } }
+    body.show-s2 .ctx-sub-item.target .nm2 {
+      animation: subName .01s 6.0s forwards;
     }
+    @keyframes subName { to { color: white; } }
+    body.show-s2 .ctx-sub-item.target .pv {
+      animation: subPv .01s 6.0s forwards;
+    }
+    @keyframes subPv { to { color: white; } }
 
     body.show-s2 .compose-body .typed { animation: typeReveal2 1.6s ease forwards; animation-delay: 8.5s; }
     @keyframes typeReveal2 {
@@ -729,9 +810,9 @@
       71%, 100% { opacity: 0; }
     }
 
-    body.show-s2 .pulse-2a { left: 820px; top: 320px; animation: pulse .55s ease-out forwards; animation-delay: 1.5s; }
-    body.show-s2 .pulse-2b { left: 820px; top: 320px; animation: pulse .55s ease-out forwards; animation-delay: 2.4s; } /* right-click double indicator */
-    body.show-s2 .pulse-2c { left: 1180px; top: 490px; animation: pulse .55s ease-out forwards; animation-delay: 7.6s; }
+    body.show-s2 .pulse-2a { left: 520px; top: 320px; animation: pulse .55s ease-out forwards; animation-delay: 1.5s; }
+    body.show-s2 .pulse-2b { left: 520px; top: 320px; animation: pulse .55s ease-out forwards; animation-delay: 2.4s; } /* right-click double indicator */
+    body.show-s2 .pulse-2c { left: 880px; top: 499px; animation: pulse .55s ease-out forwards; animation-delay: 7.6s; }
 
     /* =====================================================
        SCENE 3 — Floating picker via Alt+Shift+T
@@ -802,21 +883,36 @@
       background: var(--bg);
       color: var(--ink);
       font-size: 15.5px;
+      line-height: 1.45;
       position: relative;
-      display: flex; flex-direction: column;
+      /* Not flex — caret and typed are inline siblings on the same line
+         so the inserted text appears AT the caret, not on the next line. */
     }
-    .chat-input .placeholder { color: var(--ink-3); }
+    /* Placeholder positioned absolute so it doesn't push the typed text
+       to the right when it disappears, and so its layout footprint is
+       gone once it fades out. */
+    .chat-input .placeholder {
+      color: var(--ink-3);
+      position: absolute;
+      top: 16px; left: 20px;
+    }
+    body.show-s3 .chat-input .placeholder {
+      animation: phHide .25s 9.5s ease forwards;
+    }
+    @keyframes phHide { to { opacity: 0; visibility: hidden; } }
     .chat-input .typed3 {
       display: inline-block;
+      vertical-align: top;
       clip-path: inset(0 100% 0 0);
       color: var(--ink);
       white-space: pre-wrap;
     }
     .chat-input .caret3 {
       display: inline-block;
+      vertical-align: top;
       width: 2px; height: 20px;
       background: var(--accent);
-      vertical-align: -2px;
+      margin: 3px 1px 0 0;
       animation: blink 1s infinite step-end;
     }
     body.show-s3 .chat-input { animation: focusInput .3s ease forwards; animation-delay: 1.6s; }
@@ -824,10 +920,11 @@
       to { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
     }
 
-    /* Kbd hint balloon */
+    /* Kbd hint balloon — centered vertically in the viewport so it reads
+       like a transient overlay, not a label tied to the input. */
     .kbd-hint {
       position: absolute;
-      top: 470px; left: 50%;
+      top: 400px; left: 50%;
       transform: translateX(-50%);
       display: flex; gap: 10px; align-items: center;
       padding: 14px 24px;
@@ -873,10 +970,18 @@
       opacity: 0;
       z-index: 5;
     }
-    body.show-s3 .picker { animation: pickIn .35s cubic-bezier(.34,1.56,.64,1) forwards; animation-delay: 3.8s; }
-    body.show-s3 .picker.out { animation: pickOut .25s ease forwards; animation-delay: 9.6s; }
-    @keyframes pickIn { to { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); } }
-    @keyframes pickOut { to { opacity: 0; transform: translateX(-50%) translateY(-4px) scale(.99); } }
+    /* Picker lifecycle — open (3.8s), hold while Saudação→Assinatura nav
+       plays out, close right after Enter is pressed (~9.5s). */
+    body.show-s3 .picker {
+      animation: pickerLife 5.8s ease forwards;
+      animation-delay: 3.8s;
+    }
+    @keyframes pickerLife {
+      0%   { opacity: 0; transform: translateX(-50%) translateY(8px) scale(.97); }
+      6%   { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+      94%  { opacity: 1; transform: translateX(-50%) translateY(0) scale(1); }
+      100% { opacity: 0; transform: translateX(-50%) translateY(-4px) scale(.99); }
+    }
 
     .picker-head {
       display: flex; justify-content: space-between; align-items: center;
@@ -932,16 +1037,18 @@
     body.show-s3 .cursor {
       animation: c3path 12s ease-in-out forwards;
     }
+    /* Viewport coordinates — chat input sits roughly y=696–776 with center
+       around 730; cursor parks there while the picker plays out keyboard. */
     @keyframes c3path {
       0%   { transform: translate(700px, 200px); opacity: 0; }
-      5%   { transform: translate(820px, 720px); opacity: 1; }   /* click input */
-      14%  { transform: translate(820px, 730px); }
-      30%, 60%  { transform: translate(820px, 730px); }            /* hold while picker is shown */
-      75%  { transform: translate(820px, 730px); }
-      100% { transform: translate(720px, 760px); opacity: 1; }
+      5%   { transform: translate(850px, 720px); opacity: 1; }   /* click input */
+      14%  { transform: translate(850px, 730px); }
+      30%, 60%  { transform: translate(850px, 730px); }          /* hold while picker shows */
+      75%  { transform: translate(850px, 730px); }
+      100% { transform: translate(780px, 760px); opacity: 1; }
     }
 
-    body.show-s3 .pulse-3a { left: 820px; top: 730px; animation: pulse .55s ease-out forwards; animation-delay: .8s; }
+    body.show-s3 .pulse-3a { left: 850px; top: 730px; animation: pulse .55s ease-out forwards; animation-delay: .8s; }
 
     body.show-s3 .chat-input .typed3 { animation: typeReveal2 1.0s ease forwards; animation-delay: 9.9s; }
 
@@ -986,23 +1093,16 @@
     .outro-logo {
       width: 132px; height: 132px;
       border-radius: 30px;
-      background: linear-gradient(135deg, var(--accent-2), var(--accent));
-      display: grid; place-items: center;
+      overflow: hidden;
       box-shadow: 0 30px 60px -15px rgba(255,91,46,.35);
       transform: scale(.85); opacity: 0;
     }
+    .outro-logo img { width: 100%; height: 100%; display: block; }
     body.show-outro .outro-logo {
       animation: outroLogo .8s cubic-bezier(.34,1.56,.64,1) forwards;
     }
     @keyframes outroLogo {
       to { transform: scale(1); opacity: 1; }
-    }
-    .outro-logo span {
-      font-family: var(--display);
-      font-style: italic;
-      color: white;
-      font-size: 88px;
-      line-height: 1;
     }
     .outro-name {
       font-family: var(--display);
@@ -1094,12 +1194,21 @@
 
           <!-- =========== SCENE 1 =========== -->
           <section class="scene scene-1">
+            <div class="doc-blank">
+              <h2>Nova mensagem</h2>
+              <div class="skeleton-row r1"></div>
+              <div class="skeleton-row r2"></div>
+              <div class="skeleton-row r3"></div>
+              <div class="skeleton-row r4"></div>
+              <div class="skeleton-row r5"></div>
+            </div>
+
             <aside class="sp">
               <div class="sp-header">
-                <div class="sp-logo">I</div>
+                <div class="sp-logo"><img src="icon48.png" alt="InstaType"></div>
                 <div>
                   <div class="sp-title">InstaType</div>
-                  <div class="sp-sub">3 templates · mail.example.com</div>
+                  <div class="sp-sub">2 templates · mail.example.com</div>
                 </div>
               </div>
               <div class="sp-search">Buscar template…</div>
@@ -1107,7 +1216,7 @@
               <div class="sp-list">
                 <div class="sp-item new-one">
                   <div class="sp-item-name">Assinatura</div>
-                  <div class="sp-item-preview">Atenciosamente, Eduardo Penna…</div>
+                  <div class="sp-item-preview">Atenciosamente, Alex Mendes…</div>
                   <div class="sp-item-tag">Global</div>
                 </div>
                 <div class="sp-item global">
@@ -1123,15 +1232,6 @@
               </div>
             </aside>
 
-            <div class="doc-blank">
-              <h2>Nova mensagem</h2>
-              <div class="skeleton-row r1"></div>
-              <div class="skeleton-row r2"></div>
-              <div class="skeleton-row r3"></div>
-              <div class="skeleton-row r4"></div>
-              <div class="skeleton-row r5"></div>
-            </div>
-
             <!-- Editor floating panel -->
             <div class="sp-editor">
               <div class="editor-title">Novo template</div>
@@ -1139,8 +1239,8 @@
               <div class="field-input f-name active"><span>Assinatura</span></div>
               <div class="field-label">Conteúdo</div>
               <div class="field-textarea"><span class="ln-1">Atenciosamente,
-</span><span class="ln-2">Eduardo Penna
-</span><span class="ln-3">NaRadio</span></div>
+</span><span class="ln-2">Alex Mendes
+</span><span class="ln-3">Acme Co.</span></div>
               <div class="field-label">Escopo</div>
               <div class="scope-row">
                 <div class="scope-chip active">Global</div>
@@ -1176,41 +1276,43 @@
 
 Fico à disposição para alinharmos detalhes.
 
-</span><span class="typed">Atenciosamente,
-Eduardo Penna
-NaRadio</span><span class="caret"></span>
-                </div>
-
-                <!-- Context menu -->
-                <div class="ctx">
-                  <div class="ctx-item disabled"><span class="nm">Voltar</span><span class="kbd">⌘Z</span></div>
-                  <div class="ctx-sep"></div>
-                  <div class="ctx-item"><span class="nm">Recortar</span><span class="kbd">⌘X</span></div>
-                  <div class="ctx-item"><span class="nm">Copiar</span><span class="kbd">⌘C</span></div>
-                  <div class="ctx-item"><span class="nm">Colar</span><span class="kbd">⌘V</span></div>
-                  <div class="ctx-sep"></div>
-                  <div class="ctx-item has-sub hovered">
-                    <span class="nm"><span class="ico">I</span>InstaType</span>
-                    <!-- submenu -->
-                    <div class="ctx-sub">
-                      <div class="ctx-sub-item target hl">
-                        <div class="nm2">Assinatura</div>
-                        <div class="pv">Atenciosamente, Eduardo Penna…</div>
-                      </div>
-                      <div class="ctx-sub-item">
-                        <div class="nm2">Saudação cordial</div>
-                        <div class="pv">Olá, tudo bem? Espero que…</div>
-                      </div>
-                      <div class="ctx-sub-item">
-                        <div class="nm2">Resposta automática</div>
-                        <div class="pv">Obrigado pela mensagem. Vou…</div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="ctx-sep"></div>
-                  <div class="ctx-item"><span class="nm">Verificar ortografia</span></div>
+</span><span class="caret"></span><span class="typed">Atenciosamente,
+Alex Mendes
+Acme Co.</span>
                 </div>
               </div>
+            </div>
+
+            <!-- Context menu — sibling of mail-app so its top/left are in
+                 scene-2/viewport coordinates and it appears AT the cursor
+                 right-click point (same coord system as cursor + pulses). -->
+            <div class="ctx">
+              <div class="ctx-item disabled"><span class="nm">Voltar</span><span class="kbd">⌘Z</span></div>
+              <div class="ctx-sep"></div>
+              <div class="ctx-item"><span class="nm">Recortar</span><span class="kbd">⌘X</span></div>
+              <div class="ctx-item"><span class="nm">Copiar</span><span class="kbd">⌘C</span></div>
+              <div class="ctx-item"><span class="nm">Colar</span><span class="kbd">⌘V</span></div>
+              <div class="ctx-sep"></div>
+              <div class="ctx-item has-sub">
+                <span class="nm"><span class="ico"><img src="icon48.png" alt=""></span>InstaType</span>
+                <!-- submenu -->
+                <div class="ctx-sub">
+                  <div class="ctx-sub-item target">
+                    <div class="nm2">Assinatura</div>
+                    <div class="pv">Atenciosamente, Alex Mendes…</div>
+                  </div>
+                  <div class="ctx-sub-item">
+                    <div class="nm2">Saudação cordial</div>
+                    <div class="pv">Olá, tudo bem? Espero que…</div>
+                  </div>
+                  <div class="ctx-sub-item">
+                    <div class="nm2">Resposta automática</div>
+                    <div class="pv">Obrigado pela mensagem. Vou…</div>
+                  </div>
+                </div>
+              </div>
+              <div class="ctx-sep"></div>
+              <div class="ctx-item"><span class="nm">Verificar ortografia</span></div>
             </div>
 
             <div class="click-pulse pulse-2a"></div>
@@ -1230,7 +1332,7 @@ NaRadio</span><span class="caret"></span>
               </div>
               <div class="chat-stream">
                 <div class="bubble them">
-                  Eduardo, consegue me mandar os dados pra eu fechar o contrato?
+                  Oi, consegue me mandar os dados pra eu fechar o contrato?
                   <div class="small">14:32</div>
                 </div>
                 <div class="bubble them">
@@ -1239,9 +1341,9 @@ NaRadio</span><span class="caret"></span>
                 </div>
               </div>
               <div class="chat-input">
-                <span class="placeholder" id="ph3">Escreva uma mensagem</span><span class="typed3">Atenciosamente,
-Eduardo Penna
-NaRadio</span><span class="caret3"></span>
+                <span class="placeholder" id="ph3">Escreva uma mensagem</span><span class="caret3"></span><span class="typed3">Atenciosamente,
+Alex Mendes
+Acme Co.</span>
               </div>
             </div>
 
@@ -1265,7 +1367,7 @@ NaRadio</span><span class="caret3"></span>
               </div>
               <div class="picker-row row-2">
                 <div class="name">Assinatura</div>
-                <div class="pv">Atenciosamente, Eduardo Penna, NaRadio</div>
+                <div class="pv">Atenciosamente, Alex Mendes, Acme Co.</div>
                 <div class="badge">Global</div>
               </div>
               <div class="picker-row">
@@ -1284,12 +1386,22 @@ NaRadio</span><span class="caret3"></span>
           <!-- =========== OUTRO =========== -->
           <section class="scene scene-outro">
             <div class="outro-grid">
-              <div class="outro-logo"><span>I</span></div>
+              <div class="outro-logo"><img src="icon128.png" alt="InstaType"></div>
               <div class="outro-name">Insta<span class="accent">Type</span></div>
               <p class="outro-tag">Salve trechos de texto e cole em qualquer campo da web — com um clique direito, no Side Panel ou pelo atalho de teclado.</p>
               <div class="outro-url">instatype.s3web.com.br</div>
             </div>
           </section>
+
+          <!-- Simulated cursor — lives INSIDE the viewport so its translate(x, y)
+               coordinates share the same containing block as the click-pulses
+               and the in-scene UI (ctx menu, picker, editor). -->
+          <div class="cursor">
+            <svg viewBox="0 0 28 32" xmlns="http://www.w3.org/2000/svg">
+              <path d="M2 1 L2 24 L8.5 19 L12.5 28 L16.5 26.2 L12.5 17 L21 17 Z"
+                    fill="#1c1a17" stroke="#ffffff" stroke-width="1.4" stroke-linejoin="round"/>
+            </svg>
+          </div>
 
         </div>
       </div>
@@ -1300,14 +1412,6 @@ NaRadio</span><span class="caret3"></span>
         <div class="caption cap-2" style="position:absolute"><span class="num">02</span>Cole em qualquer campo da web.</div>
         <div class="caption cap-3" style="position:absolute"><span class="num">03</span>Ou use o atalho de teclado.</div>
         <div class="caption cap-outro" style="position:absolute; opacity:0"></div>
-      </div>
-
-      <!-- Simulated cursor -->
-      <div class="cursor">
-        <svg viewBox="0 0 28 32" xmlns="http://www.w3.org/2000/svg">
-          <path d="M2 1 L2 24 L8.5 19 L12.5 28 L16.5 26.2 L12.5 17 L21 17 Z"
-                fill="#1c1a17" stroke="#ffffff" stroke-width="1.4" stroke-linejoin="round"/>
-        </svg>
       </div>
 
       <div class="prog"></div>
