@@ -362,12 +362,17 @@
     }
 
     /* ============ FEATURES ============ */
+    /* Flex (not grid) so a trailing row with fewer than 3 cards centers
+       instead of leaving an orphan hugging the left edge. */
     .features {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 18px;
     }
     .feature {
+      flex: 1 1 280px;
+      max-width: calc((100% - 36px) / 3);
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 16px;
@@ -616,7 +621,8 @@
       h1 { font-size: 56px; }
       h2 { font-size: 40px; }
       section { padding: 60px 24px; }
-      .features { grid-template-columns: 1fr; gap: 12px; }
+      .features { gap: 12px; }
+      .feature { max-width: 100%; flex-basis: 100%; }
       .how { grid-template-columns: 1fr; gap: 30px; }
       .privacy { grid-template-columns: 1fr; padding: 40px 30px; }
       .privacy h2 { font-size: 32px; }
@@ -754,6 +760,13 @@ Product designer · Studio Atlas</div>
       </div>
       <h3>Importar &amp; exportar</h3>
       <p>Leve sua biblioteca entre dispositivos com um arquivo JSON. Faça backup, filtre por escopo, restaure quando quiser.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      </div>
+      <h3>Copiar para qualquer lugar</h3>
+      <p>Um botão de copiar em cada template põe o conteúdo no clipboard — cole em apps desktop, outros navegadores ou onde precisar.</p>
     </div>
     <div class="feature">
       <div class="feature-icon">

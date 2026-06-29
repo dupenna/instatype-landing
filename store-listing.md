@@ -73,6 +73,12 @@ device — not even anonymized.
 Your active tab's domain is read in real time (so the menu can filter
 by site) but never stored or transmitted.
 
+━━━ Copy to use anywhere ━━━
+
+Every snippet has a one-click Copy button in the side panel — put it on
+your clipboard and paste it into desktop apps, other browsers, or
+anywhere outside the web.
+
 ━━━ Portable ━━━
 
 • Export your library as JSON, anytime.
@@ -134,6 +140,12 @@ sai do seu dispositivo — nem mesmo anonimizado.
 
 O domínio da aba ativa é lido em tempo real (para o menu filtrar
 por site) mas nunca armazenado ou transmitido.
+
+━━━ Copie para usar em qualquer lugar ━━━
+
+Cada template tem um botão Copiar de um clique no Side Panel — coloque
+no clipboard e cole em aplicativos desktop, outros navegadores ou
+qualquer lugar fora da web.
 
 ━━━ Portátil ━━━
 
@@ -199,6 +211,12 @@ sale de tu dispositivo — ni siquiera anonimizado.
 
 El dominio de la pestaña activa se lee en tiempo real (para que
 el menú filtre por sitio) pero nunca se guarda ni se transmite.
+
+━━━ Copia para usar en cualquier lugar ━━━
+
+Cada plantilla tiene un botón Copiar de un clic en el panel lateral —
+ponla en el portapapeles y pégala en apps de escritorio, otros
+navegadores o donde sea fuera de la web.
 
 ━━━ Portátil ━━━
 

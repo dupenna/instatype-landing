@@ -362,12 +362,17 @@
     }
 
     /* ============ FEATURES ============ */
+    /* Flex (not grid) so a trailing row with fewer than 3 cards centers
+       instead of leaving an orphan hugging the left edge. */
     .features {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 18px;
     }
     .feature {
+      flex: 1 1 280px;
+      max-width: calc((100% - 36px) / 3);
       background: var(--surface);
       border: 1px solid var(--line);
       border-radius: 16px;
@@ -616,7 +621,8 @@
       h1 { font-size: 56px; }
       h2 { font-size: 40px; }
       section { padding: 60px 24px; }
-      .features { grid-template-columns: 1fr; gap: 12px; }
+      .features { gap: 12px; }
+      .feature { max-width: 100%; flex-basis: 100%; }
       .how { grid-template-columns: 1fr; gap: 30px; }
       .privacy { grid-template-columns: 1fr; padding: 40px 30px; }
       .privacy h2 { font-size: 32px; }
@@ -757,6 +763,13 @@ Product designer · Studio Atlas</div>
     </div>
     <div class="feature">
       <div class="feature-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+      </div>
+      <h3>Copy anywhere</h3>
+      <p>A copy button on every template puts the content on your clipboard — paste it into desktop apps, other browsers, or wherever you need.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-icon">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10A15.3 15.3 0 0 1 8 12a15.3 15.3 0 0 1 4-10z"/></svg>
       </div>
       <h3>Multi-language</h3>
@@ -779,7 +792,7 @@ Product designer · Studio Atlas</div>
     <div class="step">
       <div class="step-num">02</div>
       <h3>Keyboard shortcut</h3>
-      <p>Press <kbd class="k-alt">⌥</kbd> <kbd class="k-shift">⇧</kbd> <kbd>T</kbd> on any focused field. A floating picker appears with search, ↑↓ and Enter to choose.</p>
+      <p>Pressione <kbd class="k-alt">⌥</kbd> <kbd class="k-shift">⇧</kbd> <kbd>T</kbd> em qualquer campo focado. Um seletor flutuante aparece com busca, ↑↓ e Enter para escolher.</p>
     </div>
     <div class="step">
       <div class="step-num">03</div>
@@ -794,7 +807,7 @@ Product designer · Studio Atlas</div>
   <h2>See it in action.</h2>
   <p class="section-lead">Small details made for daily use: scope badges, instant search, the shortcut always pinned at the bottom.</p>
   <div class="demo-video">
-    <video autoplay loop muted playsinline preload="metadata" aria-label="40-second InstaType demo">
+    <video autoplay loop muted playsinline preload="metadata" aria-label="Demonstração do InstaType em 40 segundos">
       <source src="video/demo-video.mp4" type="video/mp4">
     </video>
   </div>
