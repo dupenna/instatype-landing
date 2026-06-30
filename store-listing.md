@@ -59,9 +59,9 @@ clutter your personal email, and dev snippets stay where you write code.
 
 ━━━ Works in any input ━━━
 
-• Plain inputs and textareas (forms, search boxes)
-• Rich-text editors built on the major web frameworks (Lexical,
-  ProseMirror, Slate, Draft.js, Quill)
+• Plain text inputs and textareas (forms, search boxes, comments)
+• Rich-text and contenteditable editors, including modern ones that
+  manage their own input, so text lands correctly
 • Multi-line snippets keep their line breaks intact
 
 ━━━ Private by design ━━━
@@ -127,9 +127,9 @@ polui o e-mail pessoal, e os snippets de código ficam onde você programa.
 
 ━━━ Funciona em qualquer campo ━━━
 
-• Inputs e textareas comuns (formulários, buscas)
-• Editores rich-text baseados nos principais frameworks da web
-  (Lexical, ProseMirror, Slate, Draft.js, Quill)
+• Inputs e textareas comuns (formulários, buscas, comentários)
+• Editores rich-text e contenteditable, inclusive os modernos que
+  gerenciam a própria entrada, para o texto cair no lugar certo
 • Templates multi-linha mantêm as quebras de linha intactas
 
 ━━━ Privado por design ━━━
@@ -198,9 +198,9 @@ donde escribes código.
 
 ━━━ Funciona en cualquier campo ━━━
 
-• Inputs y textareas comunes (formularios, búsquedas)
-• Editores rich-text basados en los principales frameworks de la web
-  (Lexical, ProseMirror, Slate, Draft.js, Quill)
+• Inputs y textareas comunes (formularios, búsquedas, comentarios)
+• Editores rich-text y contenteditable, incluso los modernos que
+  gestionan su propia entrada, para que el texto caiga donde debe
 • Las plantillas multilínea conservan los saltos de línea intactos
 
 ━━━ Privado por diseño ━━━
